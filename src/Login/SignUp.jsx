@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -8,6 +8,7 @@ import {
   Image,
 } from "react-native";
 import { firestore, auth } from "../../firebase";
+import { UserContext } from "../UserProvider";
 
 const googleImage = require("../../assets/Google.png");
 
@@ -17,6 +18,7 @@ export default function SignUp(props) {
   const [birthDate, setBirthDate] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const { setUser } = useContext(UserContext);
 
   async function handleSubmit() {
     const email = username + "@gmail.com";
@@ -34,8 +36,8 @@ export default function SignUp(props) {
         .collection("users")
         .doc(auth.currentUser.uid)
         .set(newUser);
-
-      props.nav.replace("Main", { screen: "Home", user: newUser });
+      setUser(newUser);
+      props.nav.replace("Main", { screen: "Home" });
     } catch (error) {
       console.error("Couldn't make user", error);
       setFirstName("");

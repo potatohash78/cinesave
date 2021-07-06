@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { auth } from "../../../firebase";
 import { Ionicons } from "@expo/vector-icons";
-import { UserContext } from "../Main";
+import { UserContext } from "../../UserProvider";
 import { TheatersContext } from "../../TheatersProvider";
 import { SettingsContext } from "../../SettingsProvider";
 import Carousel from "react-native-snap-carousel";

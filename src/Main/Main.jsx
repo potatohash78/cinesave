@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from "react";
+import React, { useContext } from "react";
 import { StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,12 +7,12 @@ import Profile from "./Profile/Profile";
 import Search from "./Search/Search";
 import Tickets from "./Tickets/Tickets";
 import { SettingsContext } from "../SettingsProvider";
+import { UserContext } from "../UserProvider";
 
 const Tab = createBottomTabNavigator();
-export const UserContext = createContext();
 
-export default function Main({ route, navigation }) {
-  const { user } = route.params;
+export default function Main() {
+  const { user } = useContext(UserContext);
   const { settings } = useContext(SettingsContext);
   return (
     <UserContext.Provider value={{ user }}>
