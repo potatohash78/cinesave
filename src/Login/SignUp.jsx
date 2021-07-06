@@ -7,15 +7,44 @@ import {
   Text,
   Image,
 } from "react-native";
+import { firestore, auth } from "../../firebase";
 
 const googleImage = require("../../assets/Google.png");
 
-export default function SignUp() {
+export default function SignUp(props) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+
+  async function handleSubmit() {
+    const email = username + "@gmail.com";
+    try {
+      await auth.createUserWithEmailAndPassword(email, password);
+
+      const newUser = {
+        firstName: firstName,
+        lastName: lastName,
+        birthDate: birthDate,
+        password: password,
+        username: username,
+      };
+      await firestore
+        .collection("users")
+        .doc(auth.currentUser.uid)
+        .set(newUser);
+
+      props.nav.replace("Main", { screen: "Home", user: newUser });
+    } catch (error) {
+      console.error("Couldn't make user", error);
+      setFirstName("");
+      setLastName("");
+      setBirthDate("");
+      setPassword("");
+      setUsername("");
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -50,7 +79,7 @@ export default function SignUp() {
         onChangeText={setPassword}
         secureTextEntry={true}
       />
-      <TouchableOpacity style={styles.signupContainer}>
+      <TouchableOpacity style={styles.signupContainer} onPress={handleSubmit}>
         <Text style={styles.signup}>SIGN UP</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.googleContainer}>

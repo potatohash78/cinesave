@@ -7,12 +7,31 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import { firestore, auth } from "../../firebase";
 
 const googleImage = require("../../assets/Google.png");
 
-export default function Login() {
+export default function Login(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  async function handleLogin() {
+    const email = username + "@gmail.com";
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      const currUser = await firestore
+        .collection("users")
+        .doc(auth.currentUser.uid)
+        .get();
+      const userData = currUser.data();
+      props.nav.replace("Main", { screen: "Home", user: userData });
+    } catch (error) {
+      console.error("Error logging in user", error);
+      setUsername("");
+      setPassword("");
+    }
+  }
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -28,7 +47,7 @@ export default function Login() {
         onChangeText={setPassword}
         secureTextEntry={true}
       />
-      <TouchableOpacity style={styles.loginContainer}>
+      <TouchableOpacity style={styles.loginContainer} onPress={handleLogin}>
         <Text style={styles.login}>LOGIN</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.googleContainer}>

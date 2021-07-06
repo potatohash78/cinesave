@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Button } from "react-native";
 import Login from "./Login";
 import SignUp from "./SignUp";
 
-export default function LoginDisplay() {
+export default function LoginDisplay({ navigation }) {
   const [page, setPage] = useState(0);
 
   return (
@@ -32,11 +32,11 @@ export default function LoginDisplay() {
           </Text>
         </Text>
       )}
-      {page === 1 && <Login />}
+      {page === 1 && <Login nav={navigation} />}
       {page === 1 && (
         <Button title="return" onPress={() => setPage(0)}></Button>
       )}
-      {page === 2 && <SignUp />}
+      {page === 2 && <SignUp nav={navigation} />}
       {page === 2 && (
         <Button title="return" onPress={() => setPage(0)}></Button>
       )}
