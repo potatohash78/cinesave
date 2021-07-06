@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Overlay } from "react-native-elements";
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import { StyleSheet, View, Text, Pressable, SafeAreaView } from "react-native";
 import { TheatersContext } from "../../TheatersProvider";
 import { SettingsContext } from "../../SettingsProvider";
 
@@ -17,6 +17,12 @@ export default function DeleteTheater({ visible, setVisible, theaterName }) {
         settings.darkMode && darkStyles.container,
       ]}
     >
+      <SafeAreaView
+        style={{
+          flex: 0,
+          backgroundColor: settings.darkMode ? "black" : "white",
+        }}
+      />
       <Text
         style={[
           styles.confirmation,
@@ -129,4 +135,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const darkStyles = StyleSheet.create({});
+const darkStyles = StyleSheet.create({
+  container: {
+    backgroundColor: "black",
+  },
+
+  confirmation: {
+    color: "#D7B286",
+  },
+
+  theaterName: {
+    color: "#D7B286",
+  },
+
+  okayBtn: {
+    backgroundColor: "#D7B286",
+  },
+});

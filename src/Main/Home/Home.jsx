@@ -6,6 +6,7 @@ import {
   ScrollView,
   Dimensions,
   Pressable,
+  SafeAreaView,
 } from "react-native";
 import { auth } from "../../../firebase";
 import { Ionicons } from "@expo/vector-icons";
@@ -106,96 +107,135 @@ export default function Home() {
   const { theaters, currTheater } = useContext(TheatersContext);
   const { settings } = useContext(SettingsContext);
   return (
-    <ScrollView style={styles.homeContainer}>
-      <Settings visible={openSettings} setVisible={setOpenSettings} />
-      <View style={styles.header}>
-        <Text style={styles.brandName}>CINESAVE</Text>
-        <Text style={styles.userName}>Hi, {`${user["firstName"]}`}</Text>
-        <Pressable onPress={() => setOpenSettings(true)}>
-          <Ionicons
-            style={styles.settings}
-            name="settings"
-            size={20}
-            color="#C32528"
-          />
-        </Pressable>
-      </View>
-      <View style={styles.dealsContainer}>
-        <Text style={styles.dealsHeader}>Top Deals</Text>
-        <View style={styles.deals}>
-          <Carousel
-            layout={"default"}
-            data={movies}
-            sliderWidth={windowWidth}
-            itemWidth={250}
-            renderItem={renderDeal}
-            loop={true}
-          />
-        </View>
-      </View>
-      <View
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: settings.darkMode ? "black" : "white",
+      }}
+    >
+      <ScrollView
         style={[
-          styles.showingsContainer,
-          settings.darkMode && darkStyles.showingsContainer,
-          theaters.length > 0 && { height: 450 },
+          styles.homeContainer,
+          settings.darkMode && darkStyles.homeContainer,
         ]}
       >
-        <TheaterSelect visible={openTheater} setVisible={setOpenTheater} />
-        <MyTheaters
-          visible={addTheater}
-          setVisible={setAddTheater}
-          setParentVisible={setOpenTheater}
-        />
-        {theaters.length === 0 && (
-          <Pressable onPress={() => setAddTheater(true)}>
-            <Text
-              style={[
-                styles.addTheater,
-                settings.darkMode && darkStyles.addTheater,
-              ]}
-            >
-              Add theater
-            </Text>
+        <Settings visible={openSettings} setVisible={setOpenSettings} />
+        <View style={[styles.header, settings.darkMode && darkStyles.header]}>
+          <Text
+            style={[
+              styles.brandName,
+              settings.darkMode && darkStyles.brandName,
+            ]}
+          >
+            CINESAVE
+          </Text>
+          <Text
+            style={[styles.userName, settings.darkMode && darkStyles.userName]}
+          >
+            Hi, {`${user["firstName"]}`}
+          </Text>
+          <Pressable onPress={() => setOpenSettings(true)}>
+            <Ionicons
+              style={styles.settings}
+              name="settings"
+              size={20}
+              color={settings.darkMode ? "#D7B286" : "#C32528"}
+            />
           </Pressable>
-        )}
-        {theaters.length > 0 && (
-          <View style={styles.selectTheaterContainer}>
-            <Text
-              style={[
-                styles.selectTheater,
-                settings.darkMode && darkStyles.selectTheater,
-              ]}
-            >
-              Today at:
-            </Text>
-            <Pressable
-              onPress={() => setOpenTheater(true)}
-              style={{ flexDirection: "row" }}
-            >
+        </View>
+        <View
+          style={[
+            styles.dealsContainer,
+            settings.darkMode && darkStyles.dealsContainer,
+          ]}
+        >
+          <Text
+            style={[
+              styles.dealsHeader,
+              settings.darkMode && darkStyles.dealsHeader,
+            ]}
+          >
+            Top Deals
+          </Text>
+          <View style={styles.deals}>
+            <Carousel
+              layout={"default"}
+              data={movies}
+              sliderWidth={windowWidth}
+              itemWidth={250}
+              renderItem={renderDeal}
+              loop={true}
+            />
+          </View>
+        </View>
+        <View
+          style={[
+            styles.showingsContainer,
+            settings.darkMode && darkStyles.showingsContainer,
+            theaters.length > 0 && { height: 450 },
+          ]}
+        >
+          <TheaterSelect visible={openTheater} setVisible={setOpenTheater} />
+          <MyTheaters
+            visible={addTheater}
+            setVisible={setAddTheater}
+            setParentVisible={setOpenTheater}
+          />
+          {theaters.length === 0 && (
+            <Pressable onPress={() => setAddTheater(true)}>
               <Text
                 style={[
-                  styles.currTheater,
-                  settings.darkMode && darkStyles.currTheater,
+                  styles.addTheater,
+                  settings.darkMode && darkStyles.addTheater,
                 ]}
               >
-                {`${currTheater}`}
+                Add theater
               </Text>
-              <Ionicons name="chevron-down" size={30} color="#C32528" />
             </Pressable>
-          </View>
-        )}
-        {theaters.length > 0 && (
-          <Carousel
-            layout={"default"}
-            data={movies}
-            sliderWidth={windowWidth}
-            itemWidth={250}
-            renderItem={renderMovie}
-            loop={true}
-          />
-        )}
-      </View>
-    </ScrollView>
+          )}
+          {theaters.length > 0 && (
+            <View style={styles.selectTheaterContainer}>
+              <Text
+                style={[
+                  styles.selectTheater,
+                  settings.darkMode && darkStyles.selectTheater,
+                ]}
+              >
+                Today at:
+              </Text>
+              <Pressable
+                onPress={() => setOpenTheater(true)}
+                style={{ flexDirection: "row" }}
+              >
+                <Text
+                  style={[
+                    styles.currTheater,
+                    settings.darkMode && darkStyles.currTheater,
+                  ]}
+                >
+                  {`${currTheater}`}
+                </Text>
+                <Ionicons
+                  name="chevron-down"
+                  size={30}
+                  color={settings.darkMode ? "#D7B286" : "#C32528"}
+                />
+              </Pressable>
+            </View>
+          )}
+          {theaters.length > 0 && (
+            <Carousel
+              layout={"default"}
+              data={movies}
+              sliderWidth={windowWidth}
+              itemWidth={250}
+              renderItem={renderMovie}
+              loop={true}
+            />
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -290,4 +330,44 @@ const styles = StyleSheet.create({
   },
 });
 
-const darkStyles = StyleSheet.create({});
+const darkStyles = StyleSheet.create({
+  homeContainer: {
+    backgroundColor: "#1C1A19",
+  },
+
+  header: {
+    backgroundColor: "black",
+  },
+
+  brandName: {
+    color: "#D7B286",
+  },
+
+  userName: {
+    color: "#D7B286",
+  },
+
+  dealsContainer: {
+    backgroundColor: "black",
+  },
+
+  dealsHeader: {
+    color: "#D7B286",
+  },
+
+  showingsContainer: {
+    backgroundColor: "black",
+  },
+
+  addTheater: {
+    color: "#D7B286",
+  },
+
+  selectTheater: {
+    color: "#D7B286",
+  },
+
+  currTheater: {
+    color: "#D7B286",
+  },
+});

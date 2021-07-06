@@ -1,7 +1,14 @@
 import React, { useContext, useState } from "react";
 import { Overlay } from "react-native-elements";
 import { SettingsContext } from "../../SettingsProvider";
-import { StyleSheet, View, Text, Pressable, TextInput } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  TextInput,
+  SafeAreaView,
+} from "react-native";
 import { TheatersContext } from "../../TheatersProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { firestore } from "../../../firebase";
@@ -32,6 +39,12 @@ export default function AddTheater({ visible, setVisible }) {
         settings.darkMode && darkStyles.container,
       ]}
     >
+      <SafeAreaView
+        style={{
+          flex: 0,
+          backgroundColor: settings.darkMode ? "black" : "white",
+        }}
+      />
       <View style={[styles.header, settings.darkMode && darkStyles.header]}>
         <Pressable onPress={() => setVisible(false)}>
           <Text
@@ -63,6 +76,7 @@ export default function AddTheater({ visible, setVisible }) {
               await searchTheaters(search);
               setSearch("");
             }}
+            placeholderTextColor={settings.darkMode ? "lightgray" : "black"}
           />
           <Ionicons
             name="search-sharp"
@@ -90,7 +104,7 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    height: 90,
+    height: 70,
     alignItems: "flex-end",
     flexDirection: "row",
     width: "100%",
@@ -137,4 +151,25 @@ const styles = StyleSheet.create({
   },
 });
 
-const darkStyles = StyleSheet.create({});
+const darkStyles = StyleSheet.create({
+  container: {
+    backgroundColor: "#1C1A19",
+  },
+
+  header: {
+    backgroundColor: "black",
+  },
+
+  backBtn: {
+    color: "#D7B286",
+  },
+
+  title: {
+    color: "#D7B286",
+  },
+
+  searchBar: {
+    backgroundColor: "black",
+    color: "white",
+  },
+});

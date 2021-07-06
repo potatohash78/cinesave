@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext, useContext } from "react";
 import { StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,12 +6,14 @@ import Home from "./Home/Home";
 import Profile from "./Profile/Profile";
 import Search from "./Search/Search";
 import Tickets from "./Tickets/Tickets";
+import { SettingsContext } from "../SettingsProvider";
 
 const Tab = createBottomTabNavigator();
 export const UserContext = createContext();
 
 export default function Main({ route, navigation }) {
   const { user } = route.params;
+  const { settings } = useContext(SettingsContext);
   return (
     <UserContext.Provider value={{ user }}>
       <Tab.Navigator
@@ -34,9 +36,9 @@ export default function Main({ route, navigation }) {
           },
         })}
         tabBarOptions={{
-          activeTintColor: "#C32528",
-          inactiveTintColor: "#C32528",
-          style: styles.tabnav,
+          activeTintColor: settings.darkMode ? "#D7B286" : "#C32528",
+          inactiveTintColor: settings.darkMode ? "#D7B286" : "#C32528",
+          style: settings.darkMode ? styles.darkTabNav : styles.tabnav,
         }}
       >
         <Tab.Screen name="Home" component={Home} />
@@ -51,5 +53,9 @@ export default function Main({ route, navigation }) {
 const styles = StyleSheet.create({
   tabnav: {
     paddingBottom: 5,
+  },
+
+  darkTabNav: {
+    backgroundColor: "black",
   },
 });

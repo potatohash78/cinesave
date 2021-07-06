@@ -1,6 +1,13 @@
 import React, { useContext } from "react";
 
-import { StyleSheet, Text, Pressable, View, Switch } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  Pressable,
+  View,
+  Switch,
+  SafeAreaView,
+} from "react-native";
 import { Overlay } from "react-native-elements";
 
 import { SettingsContext } from "../SettingsProvider";
@@ -17,6 +24,7 @@ export default function Settings({ visible, setVisible }) {
         settings.darkMode && darkStyles.container,
       ]}
     >
+      <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
       <View style={[styles.header, settings.darkMode && darkStyles.header]}>
         <Pressable style={[styles.pressBtn]} onPress={() => setVisible(false)}>
           <Text

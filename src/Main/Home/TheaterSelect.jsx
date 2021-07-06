@@ -59,7 +59,11 @@ export default function TheaterSelect({ visible, setVisible }) {
               >{`${theater}`}</Text>
             </Pressable>
             {theater === currTheater && (
-              <Ionicons name="checkmark-sharp" color="#C32528" size={25} />
+              <Ionicons
+                name="checkmark-sharp"
+                color={settings.darkMode ? "#D7B286" : "#C32528"}
+                size={25}
+              />
             )}
           </View>
         ))}
@@ -120,4 +124,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const darkStyles = StyleSheet.create({});
+const darkStyles = StyleSheet.create({
+  container: {
+    backgroundColor: "black",
+  },
+
+  editBtn: {
+    backgroundColor: "#D7B286",
+  },
+
+  body: {
+    backgroundColor: "black",
+  },
+
+  theaterOption: {
+    color: "#D7B286",
+  },
+});

@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Button } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Button,
+  SafeAreaView,
+} from "react-native";
 import Login from "./Login";
 import SignUp from "./SignUp";
 
@@ -7,40 +14,42 @@ export default function LoginDisplay({ navigation }) {
   const [page, setPage] = useState(0);
 
   return (
-    <View style={styles.layout}>
-      <Text style={styles.brandName}>CINESAVE</Text>
-      {page === 0 && (
-        <TouchableOpacity
-          style={styles.loginContainer}
-          onPress={() => {
-            setPage(1);
-          }}
-        >
-          <Text style={styles.login}>LOGIN</Text>
-        </TouchableOpacity>
-      )}
-      {page === 0 && (
-        <Text style={styles.signupOne}>
-          Not a member yet?{" "}
-          <Text
-            style={styles.signupTwo}
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#C32528" }}>
+      <View style={styles.layout}>
+        <Text style={styles.brandName}>CINESAVE</Text>
+        {page === 0 && (
+          <TouchableOpacity
+            style={styles.loginContainer}
             onPress={() => {
-              setPage(2);
+              setPage(1);
             }}
           >
-            Sign up for free!
+            <Text style={styles.login}>LOGIN</Text>
+          </TouchableOpacity>
+        )}
+        {page === 0 && (
+          <Text style={styles.signupOne}>
+            Not a member yet?{" "}
+            <Text
+              style={styles.signupTwo}
+              onPress={() => {
+                setPage(2);
+              }}
+            >
+              Sign up for free!
+            </Text>
           </Text>
-        </Text>
-      )}
-      {page === 1 && <Login nav={navigation} />}
-      {page === 1 && (
-        <Button title="return" onPress={() => setPage(0)}></Button>
-      )}
-      {page === 2 && <SignUp nav={navigation} />}
-      {page === 2 && (
-        <Button title="return" onPress={() => setPage(0)}></Button>
-      )}
-    </View>
+        )}
+        {page === 1 && <Login nav={navigation} />}
+        {page === 1 && (
+          <Button title="return" onPress={() => setPage(0)}></Button>
+        )}
+        {page === 2 && <SignUp nav={navigation} />}
+        {page === 2 && (
+          <Button title="return" onPress={() => setPage(0)}></Button>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -55,7 +64,7 @@ const styles = StyleSheet.create({
   brandName: {
     color: "white",
     fontSize: 60,
-    marginTop: 120,
+    marginTop: 80,
     marginBottom: 20,
     fontWeight: "bold",
   },
@@ -66,7 +75,7 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     paddingLeft: 50,
     paddingRight: 50,
-    marginTop: "50%",
+    marginTop: 180,
     borderRadius: 50,
   },
 

@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SettingsContext } from "../../SettingsProvider";
+import { set } from "react-native-reanimated";
 
 export default function Deal({
   title,
@@ -16,32 +18,50 @@ export default function Deal({
 }) {
   //   const moviePoster = require(`${poster}`);
   const moviePoster = require("../../../assets/skywalker.png");
+  const { settings } = useContext(SettingsContext);
   return (
-    <View style={styles.dealContainer}>
-      <Text numberOfLines={1} style={styles.title}>{`${title}`}</Text>
+    <View
+      style={[
+        styles.dealContainer,
+        settings.darkMode && darkStyles.dealContainer,
+      ]}
+    >
+      <Text
+        numberOfLines={1}
+        style={[styles.title, settings.darkMode && darkStyles.title]}
+      >{`${title}`}</Text>
       <View style={styles.subcontainer}>
         <Text style={styles.genre}>
           {`${genre}`} | {`${movieLength}`}
         </Text>
-        <Text style={styles.rating}>
+        <Text style={[styles.rating, settings.darkMode && darkStyles.rating]}>
           <Ionicons name="star-sharp" color="gold" size={17} />
           {`${rating}`}
         </Text>
       </View>
-      <Text style={styles.location}>{`${location}`}</Text>
-      <Text style={styles.time}>
+      <Text
+        style={[styles.location, settings.darkMode && darkStyles.location]}
+      >{`${location}`}</Text>
+      <Text style={[styles.time, settings.darkMode && darkStyles.time]}>
         {`${showingDate}`} | {`${showingTime}`}
       </Text>
       <View style={styles.price}>
         <Text style={styles.regularPrice}>${`${price}`}</Text>
-        <Text style={styles.discountPrice}>
+        <Text
+          style={[
+            styles.discountPrice,
+            settings.darkMode && darkStyles.discountPrice,
+          ]}
+        >
           ${`${(price * (1 - discount / 100)).toFixed(2)}`}
         </Text>
       </View>
       <Text style={styles.discountBanner}>{`${discount}`}% OFF</Text>
       <Image style={styles.poster} source={moviePoster} />
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={[styles.button, settings.darkMode && darkStyles.button]}
+        >
           <Text style={styles.buttonText}>BUY NOW</Text>
         </TouchableOpacity>
       </View>
@@ -157,5 +177,35 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     paddingVertical: 5,
+  },
+});
+
+const darkStyles = StyleSheet.create({
+  dealContainer: {
+    backgroundColor: "black",
+  },
+
+  title: {
+    color: "white",
+  },
+
+  rating: {
+    color: "white",
+  },
+
+  location: {
+    color: "white",
+  },
+
+  time: {
+    color: "white",
+  },
+
+  discountPrice: {
+    color: "white",
+  },
+
+  button: {
+    backgroundColor: "#D7B286",
   },
 });

@@ -1,25 +1,37 @@
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SettingsContext } from "../../SettingsProvider";
 
 export default function Movie({ title, genre, movieLength, rating, poster }) {
   //   const moviePoster = require(`${poster}`);
   const moviePoster = require("../../../assets/skywalker.png");
+  const { settings } = useContext(SettingsContext);
   return (
-    <View style={styles.dealContainer}>
-      <Text numberOfLines={1} style={styles.title}>{`${title}`}</Text>
+    <View
+      style={[
+        styles.dealContainer,
+        settings.darkMode && darkStyles.dealContainer,
+      ]}
+    >
+      <Text
+        numberOfLines={1}
+        style={[styles.title, settings.darkMode && darkStyles.title]}
+      >{`${title}`}</Text>
       <View style={styles.subcontainer}>
         <Text style={styles.genre}>
           {`${genre}`} | {`${movieLength}`}
         </Text>
-        <Text style={styles.rating}>
+        <Text style={[styles.rating, settings.darkMode && darkStyles.rating]}>
           <Ionicons name="star-sharp" color="gold" size={17} />
           {`${rating}`}
         </Text>
       </View>
       <Image style={styles.poster} source={moviePoster} />
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={[styles.button, settings.darkMode && darkStyles.button]}
+        >
           <Text style={styles.buttonText}>SHOW TIMES</Text>
         </TouchableOpacity>
       </View>
@@ -90,5 +102,35 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     paddingVertical: 5,
+  },
+});
+
+const darkStyles = StyleSheet.create({
+  dealContainer: {
+    backgroundColor: "black",
+  },
+
+  title: {
+    color: "white",
+  },
+
+  rating: {
+    color: "white",
+  },
+
+  location: {
+    color: "white",
+  },
+
+  time: {
+    color: "white",
+  },
+
+  discountPrice: {
+    color: "white",
+  },
+
+  button: {
+    backgroundColor: "#D7B286",
   },
 });

@@ -7,6 +7,7 @@ import {
   Pressable,
   ScrollView,
   TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
 import { SettingsContext } from "../../SettingsProvider";
 import { TheatersContext } from "../../TheatersProvider";
@@ -29,6 +30,12 @@ export default function MyTheaters({ visible, setVisible, setParentVisible }) {
         settings.darkMode && darkStyles.container,
       ]}
     >
+      <SafeAreaView
+        style={{
+          flex: 0,
+          backgroundColor: settings.darkMode ? "black" : "white",
+        }}
+      />
       <DeleteTheater
         visible={remove}
         setVisible={setRemove}
@@ -119,7 +126,7 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    height: 90,
+    height: 70,
     alignItems: "flex-end",
     flexDirection: "row",
     justifyContent: "center",
