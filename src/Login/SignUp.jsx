@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   Text,
   Image,
+  ScrollView,
 } from "react-native";
 import { firestore, auth } from "../../firebase";
 import { UserContext } from "../UserProvider";
+import { PurchaseContext } from "../PurchaseProvider";
 
 const googleImage = require("../../assets/Google.png");
 
@@ -18,10 +20,11 @@ export default function SignUp(props) {
   const [birthDate, setBirthDate] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const { setUser } = useContext(UserContext);
+  const { setLoggedIn } = useContext(PurchaseContext);
 
   async function handleSubmit() {
-    const email = username + "@gmail.com";
     try {
       await auth.createUserWithEmailAndPassword(email, password);
 
@@ -31,12 +34,19 @@ export default function SignUp(props) {
         birthDate: birthDate,
         password: password,
         username: username,
+        email: email,
+        premium: false,
+        id: auth.currentUser.uid,
       };
+
       await firestore
         .collection("users")
         .doc(auth.currentUser.uid)
         .set(newUser);
+
       setUser(newUser);
+      setLoggedIn(true);
+
       props.nav.replace("Main", { screen: "Home" });
     } catch (error) {
       console.error("Couldn't make user", error);
@@ -49,46 +59,54 @@ export default function SignUp(props) {
   }
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.field}
-        placeholder="First name"
-        value={firstName}
-        onChangeText={setFirstName}
-      />
-      <TextInput
-        style={styles.field}
-        placeholder="Last name"
-        value={lastName}
-        onChangeText={setLastName}
-      />
-      <TextInput
-        style={styles.field}
-        placeholder="Date of birth"
-        value={birthDate}
-        onChangeText={setBirthDate}
-      />
-      <TextInput
-        style={styles.field}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={styles.field}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry={true}
-      />
-      <TouchableOpacity style={styles.signupContainer} onPress={handleSubmit}>
-        <Text style={styles.signup}>SIGN UP</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.googleContainer}>
-        <Text style={styles.googleSignup}>Sign up using</Text>
-        <Image source={googleImage} />
-      </TouchableOpacity>
-    </View>
+    <ScrollView>
+      <View style={styles.container}>
+        <TextInput
+          style={styles.field}
+          placeholder="First name"
+          value={firstName}
+          onChangeText={setFirstName}
+        />
+        <TextInput
+          style={styles.field}
+          placeholder="Last name"
+          value={lastName}
+          onChangeText={setLastName}
+        />
+        <TextInput
+          style={styles.field}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.field}
+          placeholder="Date of birth"
+          value={birthDate}
+          onChangeText={setBirthDate}
+        />
+        <TextInput
+          style={styles.field}
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
+          style={styles.field}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={true}
+        />
+        <TouchableOpacity style={styles.signupContainer} onPress={handleSubmit}>
+          <Text style={styles.signup}>SIGN UP</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.googleContainer}>
+          <Text style={styles.googleSignup}>Sign up using</Text>
+          <Image source={googleImage} />
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 

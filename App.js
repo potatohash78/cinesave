@@ -5,6 +5,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import SettingsProvider from "./src/SettingsProvider";
 import TheatersProvider from "./src/TheatersProvider";
 import UserProvider from "./src/UserProvider";
+import PurchaseProvider from "./src/PurchaseProvider";
 import LoginDisplay from "./src/Login/LoginDisplay";
 import Main from "./src/Main/Main";
 
@@ -16,15 +17,17 @@ export default function App() {
       <UserProvider>
         <SettingsProvider>
           <TheatersProvider>
-            <Stack.Navigator
-              initialRouteName="LoginDisplay"
-              screenOptions={{
-                headerShown: false,
-              }}
-            >
-              <Stack.Screen name="LoginDisplay" component={LoginDisplay} />
-              <Stack.Screen name="Main" component={Main} />
-            </Stack.Navigator>
+            <PurchaseProvider>
+              <Stack.Navigator
+                initialRouteName="LoginDisplay"
+                screenOptions={{
+                  headerShown: false,
+                }}
+              >
+                <Stack.Screen name="LoginDisplay" component={LoginDisplay} />
+                <Stack.Screen name="Main" component={Main} />
+              </Stack.Navigator>
+            </PurchaseProvider>
           </TheatersProvider>
         </SettingsProvider>
       </UserProvider>

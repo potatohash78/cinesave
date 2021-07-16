@@ -13,7 +13,7 @@ import { TheatersContext } from "../../TheatersProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { firestore } from "../../../firebase";
 
-export default function AddTheater({ visible, setVisible }) {
+export default function AddTheater({ visible, setVisible, setChanges }) {
   const { settings } = useContext(SettingsContext);
   const { theaters, setTheaters, currTheater, setCurrTheater } =
     useContext(TheatersContext);
@@ -76,7 +76,7 @@ export default function AddTheater({ visible, setVisible }) {
               await searchTheaters(search);
               setSearch("");
             }}
-            placeholderTextColor={settings.darkMode ? "lightgray" : "black"}
+            placeholderTextColor={settings.darkMode ? "lightgray" : "#BCBCBC"}
           />
           <Ionicons
             name="search-sharp"

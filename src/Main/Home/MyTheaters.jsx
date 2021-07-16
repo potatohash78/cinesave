@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Overlay } from "react-native-elements";
 import {
   StyleSheet,
@@ -17,10 +17,16 @@ import AddTheater from "./AddTheater";
 
 export default function MyTheaters({ visible, setVisible, setParentVisible }) {
   const { settings } = useContext(SettingsContext);
-  const { theaters } = useContext(TheatersContext);
+  const { theaters, setTheaters } = useContext(TheatersContext);
   const [remove, setRemove] = useState(false);
   const [removedTheater, setRemovedTheater] = useState("");
   const [addTheater, setAddTheater] = useState(false);
+  const [changes, setChanges] = useState(false);
+  const [initialTheaters, setInitialTheaters] = useState([]);
+
+  useEffect(() => {
+    setInitialTheaters(theaters);
+  }, [visible]);
   return (
     <Overlay
       isVisible={visible}
@@ -40,14 +46,20 @@ export default function MyTheaters({ visible, setVisible, setParentVisible }) {
         visible={remove}
         setVisible={setRemove}
         theaterName={removedTheater}
+        setChanges={setChanges}
       />
-      <AddTheater visible={addTheater} setVisible={setAddTheater} />
+      <AddTheater
+        visible={addTheater}
+        setVisible={setAddTheater}
+        setChanges={setChanges}
+      />
       <View style={[styles.header, settings.darkMode && darkStyles.header]}>
         <Pressable
           style={[styles.pressBtn]}
           onPress={() => {
             setVisible(false);
             setParentVisible(false);
+            setTheaters(initialTheaters);
           }}
         >
           <Text
@@ -59,8 +71,24 @@ export default function MyTheaters({ visible, setVisible, setParentVisible }) {
         <Text style={[styles.title, settings.darkMode && darkStyles.title]}>
           THEATERS
         </Text>
-        <Pressable style={styles.pressBtn}>
-          <Text style={styles.saveBtn}>SAVE</Text>
+        <Pressable
+          style={styles.pressBtn}
+          onPress={() => {
+            if (changes) {
+              setVisible(false);
+              setParentVisible(false);
+            }
+          }}
+        >
+          <Text
+            style={[
+              styles.saveBtn,
+              changes && styles.saveOn,
+              settings.darkMode && changes && darkStyles.saveOn,
+            ]}
+          >
+            SAVE
+          </Text>
         </Pressable>
       </View>
       <ScrollView alwaysBounceVertical={false}>
@@ -199,6 +227,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 15,
   },
+
+  saveOn: {
+    color: "#C32528",
+  },
 });
 
 const darkStyles = StyleSheet.create({
@@ -228,5 +260,9 @@ const darkStyles = StyleSheet.create({
 
   addContainer: {
     backgroundColor: "#D7B286",
+  },
+
+  saveOn: {
+    color: "#D7B286",
   },
 });

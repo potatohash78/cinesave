@@ -4,7 +4,12 @@ import { StyleSheet, View, Text, Pressable, SafeAreaView } from "react-native";
 import { TheatersContext } from "../../TheatersProvider";
 import { SettingsContext } from "../../SettingsProvider";
 
-export default function DeleteTheater({ visible, setVisible, theaterName }) {
+export default function DeleteTheater({
+  visible,
+  setVisible,
+  theaterName,
+  setChanges,
+}) {
   const { settings } = useContext(SettingsContext);
   const { theaters, setTheaters, currTheater, setCurrTheater } =
     useContext(TheatersContext);
@@ -61,6 +66,7 @@ export default function DeleteTheater({ visible, setVisible, theaterName }) {
               (theater) => theater !== theaterName
             );
             setTheaters(newTheaters);
+            setChanges(true);
             if (theaterName === currTheater) {
               setCurrTheater(newTheaters.length ? newTheaters[0] : "");
             }

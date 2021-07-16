@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { firestore, auth } from "../../firebase";
 import { UserContext } from "../UserProvider";
+import { PurchaseContext } from "../PurchaseProvider";
 
 const googleImage = require("../../assets/Google.png");
 
@@ -16,17 +17,20 @@ export default function Login(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { setUser } = useContext(UserContext);
+  const { setLoggedIn } = useContext(PurchaseContext);
 
   async function handleLogin() {
-    const email = username + "@gmail.com";
+    const query = await firestore
+      .collection("users")
+      .where("username", "==", username)
+      .get();
+    const currUser = query.docs[0].data();
+    const email = currUser.email;
+
     try {
       await auth.signInWithEmailAndPassword(email, password);
-      const currUser = await firestore
-        .collection("users")
-        .doc(auth.currentUser.uid)
-        .get();
-      const userData = currUser.data();
-      setUser(userData);
+      setUser(currUser);
+      setLoggedIn(true);
       props.nav.replace("Main", { screen: "Home" });
     } catch (error) {
       console.error("Error logging in user", error);

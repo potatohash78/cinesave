@@ -1,3 +1,5 @@
 import React from "react";
 
-export default function Tickets() {}
+export default function Tickets() {
+  return null;
+}

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import {
   StyleSheet,
@@ -14,7 +14,12 @@ import { SettingsContext } from "../SettingsProvider";
 
 export default function Settings({ visible, setVisible }) {
   const { settings, setSettings } = useContext(SettingsContext);
-
+  const [initialSettings, setInitialSettings] = useState([]);
+  const [changes, setChanges] = useState(false);
+  useEffect(() => {
+    setInitialSettings(settings);
+    setChanges(false);
+  }, [visible]);
   return (
     <Overlay
       isVisible={visible}
@@ -24,9 +29,20 @@ export default function Settings({ visible, setVisible }) {
         settings.darkMode && darkStyles.container,
       ]}
     >
-      <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
+      <SafeAreaView
+        style={{
+          flex: 0,
+          backgroundColor: settings.darkMode ? "black" : "white",
+        }}
+      />
       <View style={[styles.header, settings.darkMode && darkStyles.header]}>
-        <Pressable style={[styles.pressBtn]} onPress={() => setVisible(false)}>
+        <Pressable
+          style={[styles.pressBtn]}
+          onPress={() => {
+            setVisible(false);
+            setSettings(initialSettings);
+          }}
+        >
           <Text
             style={[styles.backBtn, settings.darkMode && darkStyles.backBtn]}
           >
@@ -36,8 +52,23 @@ export default function Settings({ visible, setVisible }) {
         <Text style={[styles.title, settings.darkMode && darkStyles.title]}>
           SETTINGS
         </Text>
-        <Pressable style={styles.pressBtn}>
-          <Text style={styles.saveBtn}>SAVE</Text>
+        <Pressable
+          style={styles.pressBtn}
+          onPress={() => {
+            if (changes) {
+              setVisible(false);
+            }
+          }}
+        >
+          <Text
+            style={[
+              styles.saveBtn,
+              changes && styles.saveOn,
+              settings.darkMode && changes && darkStyles.saveOn,
+            ]}
+          >
+            SAVE
+          </Text>
         </Pressable>
       </View>
       <View
@@ -52,6 +83,7 @@ export default function Settings({ visible, setVisible }) {
         <Switch
           onValueChange={() => {
             setSettings({ ...settings, ["darkMode"]: !settings.darkMode });
+            setChanges(true);
           }}
           value={settings.darkMode}
         />
@@ -71,6 +103,7 @@ export default function Settings({ visible, setVisible }) {
               ...settings,
               ["notifications"]: !settings.notifications,
             });
+            setChanges(true);
           }}
           value={settings.notifications}
         />
@@ -87,6 +120,7 @@ export default function Settings({ visible, setVisible }) {
         <Switch
           onValueChange={() => {
             setSettings({ ...settings, ["location"]: !settings.location });
+            setChanges(true);
           }}
           value={settings.location}
         />
@@ -209,6 +243,10 @@ const styles = StyleSheet.create({
   optionPress: {
     width: "100%",
   },
+
+  saveOn: {
+    color: "#C32528",
+  },
 });
 
 const darkStyles = StyleSheet.create({
@@ -233,6 +271,10 @@ const darkStyles = StyleSheet.create({
   },
 
   option: {
+    color: "#D7B286",
+  },
+
+  saveOn: {
     color: "#D7B286",
   },
 });

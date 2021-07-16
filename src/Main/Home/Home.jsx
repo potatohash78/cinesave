@@ -103,9 +103,10 @@ export default function Home() {
   const [openSettings, setOpenSettings] = useState(false);
   const [openTheater, setOpenTheater] = useState(false);
   const [addTheater, setAddTheater] = useState(false);
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const { theaters, currTheater } = useContext(TheatersContext);
   const { settings } = useContext(SettingsContext);
+
   return (
     <SafeAreaView
       style={{
