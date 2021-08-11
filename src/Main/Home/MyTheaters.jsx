@@ -17,7 +17,7 @@ import AddTheater from "./AddTheater";
 
 export default function MyTheaters({ visible, setVisible, setParentVisible }) {
   const { settings } = useContext(SettingsContext);
-  const { theaters, setTheaters } = useContext(TheatersContext);
+  const { theaterNames, setTheaters } = useContext(TheatersContext);
   const [remove, setRemove] = useState(false);
   const [removedTheater, setRemovedTheater] = useState("");
   const [addTheater, setAddTheater] = useState(false);
@@ -25,7 +25,7 @@ export default function MyTheaters({ visible, setVisible, setParentVisible }) {
   const [initialTheaters, setInitialTheaters] = useState([]);
 
   useEffect(() => {
-    setInitialTheaters(theaters);
+    setInitialTheaters(theaterNames);
   }, [visible]);
   return (
     <Overlay
@@ -92,7 +92,7 @@ export default function MyTheaters({ visible, setVisible, setParentVisible }) {
         </Pressable>
       </View>
       <ScrollView alwaysBounceVertical={false}>
-        {theaters.map((theater) => (
+        {theaterNames.map((theater) => (
           <View
             key={theater}
             style={[

@@ -14,7 +14,8 @@ import MyTheaters from "./MyTheaters";
 
 export default function TheaterSelect({ visible, setVisible }) {
   const { settings } = useContext(SettingsContext);
-  const { theaters, currTheater, setCurrTheater } = useContext(TheatersContext);
+  const { theaterNames, currTheater, setCurrTheater } =
+    useContext(TheatersContext);
   const [openEdit, setOpenEdit] = useState(false);
   return visible ? (
     <View style={[styles.container, settings.darkMode && darkStyles.container]}>
@@ -36,7 +37,7 @@ export default function TheaterSelect({ visible, setVisible }) {
         </TouchableOpacity>
       </View>
       <ScrollView style={[styles.body, settings.darkMode && darkStyles.body]}>
-        {theaters.map((theater) => (
+        {theaterNames.map((theater) => (
           <View
             key={theater}
             style={[

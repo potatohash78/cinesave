@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SettingsContext } from "../../SettingsProvider";
-import { set } from "react-native-reanimated";
+import { CheckoutContext } from "../../CheckoutProvider";
 
 export default function Deal({
   title,
@@ -10,16 +10,39 @@ export default function Deal({
   movieLength,
   location,
   rating,
-  showingDate,
-  showingTime,
+  showingTimes,
   price,
   discount,
-  poster,
+  setOpenCheckout,
+  info,
 }) {
-  //   const moviePoster = require(`${poster}`);
-  const moviePoster = require("../../../assets/skywalker.png");
   const { settings } = useContext(SettingsContext);
-  return (
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [date, setDate] = useState();
+  const { setPage, setInfo, setMovieDate, setPoster } =
+    useContext(CheckoutContext);
+
+  useEffect(() => {
+    async function getPoster() {
+      const query = await fetch(
+        `https://dry-tor-14403.herokuapp.com/info/movieposter?${title}`
+      );
+      const data = await query.json();
+      setUrl(data.poster_path);
+      setLoading(false);
+    }
+    getPoster();
+    const currTime = new Date("2021-06-01T15:30:00.000Z");
+    // Reset to current time once testing is over.
+    const newTimes = showingTimes.filter((time) => {
+      let d = new Date(time);
+      return d.getTime() > currTime.getTime();
+    });
+    setDate(new Date(newTimes[0]));
+  }, []);
+
+  return loading ? null : (
     <View
       style={[
         styles.dealContainer,
@@ -32,7 +55,8 @@ export default function Deal({
       >{`${title}`}</Text>
       <View style={styles.subcontainer}>
         <Text style={styles.genre}>
-          {`${genre}`} | {`${movieLength}`}
+          {`${genre}`} | {Math.floor(`${movieLength}` / 60)} h{" "}
+          {`${movieLength}` % 60} m
         </Text>
         <Text style={[styles.rating, settings.darkMode && darkStyles.rating]}>
           <Ionicons name="star-sharp" color="gold" size={17} />
@@ -43,7 +67,13 @@ export default function Deal({
         style={[styles.location, settings.darkMode && darkStyles.location]}
       >{`${location}`}</Text>
       <Text style={[styles.time, settings.darkMode && darkStyles.time]}>
-        {`${showingDate}`} | {`${showingTime}`}
+        {`${date.toLocaleString("default", { month: "long" })}`}{" "}
+        {date.getDate()} |{" "}
+        {`${date.toLocaleString("en-US", {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+        })}`}
       </Text>
       <View style={styles.price}>
         <Text style={styles.regularPrice}>${`${price}`}</Text>
@@ -53,14 +83,28 @@ export default function Deal({
             settings.darkMode && darkStyles.discountPrice,
           ]}
         >
-          ${`${(price * (1 - discount / 100)).toFixed(2)}`}
+          ${`${discount}`}
         </Text>
       </View>
-      <Text style={styles.discountBanner}>{`${discount}`}% OFF</Text>
-      <Image style={styles.poster} source={moviePoster} />
+      <Text style={styles.discountBanner}>
+        {`${(((price - discount) * 100) / price).toFixed(0)}`}% OFF
+      </Text>
+      <Image
+        style={styles.poster}
+        source={{
+          uri: url,
+        }}
+      />
       <View style={styles.footer}>
         <TouchableOpacity
           style={[styles.button, settings.darkMode && darkStyles.button]}
+          onPress={() => {
+            setOpenCheckout(true);
+            setInfo(info);
+            setPage(2);
+            setMovieDate(date);
+            setPoster(url);
+          }}
         >
           <Text style={styles.buttonText}>BUY NOW</Text>
         </TouchableOpacity>
@@ -156,6 +200,7 @@ const styles = StyleSheet.create({
     width: "90%",
     alignSelf: "center",
     marginVertical: 12,
+    aspectRatio: 27 / 40,
   },
 
   footer: {

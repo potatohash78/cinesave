@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -8,12 +8,12 @@ import {
   Pressable,
   SafeAreaView,
 } from "react-native";
-import { auth } from "../../../firebase";
 import { Ionicons } from "@expo/vector-icons";
-import { UserContext } from "../../UserProvider";
 import { TheatersContext } from "../../TheatersProvider";
 import { SettingsContext } from "../../SettingsProvider";
+import { usePromiseTracker, trackPromise } from "react-promise-tracker";
 import Carousel from "react-native-snap-carousel";
+import Checkout from "../Checkout/Checkout";
 import Deal from "./Deal";
 import Movie from "./Movie";
 import Settings from "../Settings";
@@ -22,92 +22,75 @@ import MyTheaters from "./MyTheaters";
 
 const windowWidth = Dimensions.get("window").width;
 
-const movies = [
-  {
-    title: "Star Wars: The Rise of Skywalker",
-    genre: "Action",
-    movieLength: "2h 22m",
-    location: "Cranford Theater",
-    rating: 3.6,
-    showingDate: "October 30",
-    showingTime: "10:15 PM",
-    price: 16.49,
-    discount: 40,
-    poster: "../../../assets/skywalker.png",
-  },
-  {
-    title: "Star Wars",
-    genre: "Action",
-    movieLength: "2h 22m",
-    location: "Cranford Theater",
-    rating: 3.6,
-    showingDate: "October 30",
-    showingTime: "10:15 PM",
-    price: 16.49,
-    discount: 40,
-  },
-  {
-    title: "Star Wars",
-    genre: "Action",
-    movieLength: "2h 22m",
-    location: "Cranford Theater",
-    rating: 3.6,
-    showingDate: "October 30",
-    showingTime: "10:15 PM",
-    price: 16.49,
-    discount: 40,
-  },
-  {
-    title: "Star Wars",
-    genre: "Action",
-    movieLength: "2h 22m",
-    location: "Cranford Theater",
-    rating: 3.6,
-    showingDate: "October 30",
-    showingTime: "10:15 PM",
-    price: 16.49,
-    discount: 40,
-  },
-];
-
-function renderDeal({ item, index }) {
-  return (
-    <Deal
-      title={item.title}
-      genre={item.genre}
-      movieLength={item.movieLength}
-      location={item.location}
-      rating={item.rating}
-      showingDate={item.showingDate}
-      showingTime={item.showingTime}
-      price={item.price}
-      discount={item.discount}
-      poster={item.poster}
-    />
-  );
-}
-
-function renderMovie({ item, index }) {
-  return (
-    <Movie
-      title={item.title}
-      genre={item.genre}
-      movieLength={item.movieLength}
-      rating={item.rating}
-      poster={item.poster}
-    />
-  );
-}
-
 export default function Home() {
   const [openSettings, setOpenSettings] = useState(false);
   const [openTheater, setOpenTheater] = useState(false);
+  const [openCheckout, setOpenCheckout] = useState(false);
   const [addTheater, setAddTheater] = useState(false);
-  const { user, setUser } = useContext(UserContext);
-  const { theaters, currTheater } = useContext(TheatersContext);
+  const [deals, setDeals] = useState([]);
+  const [movies, setMovies] = useState({});
+  const { theaters, currTheater, theaterNames } = useContext(TheatersContext);
   const { settings } = useContext(SettingsContext);
+  const { promiseInProgress } = usePromiseTracker();
 
-  return (
+  useEffect(() => {
+    async function getMovies() {
+      await Promise.all(
+        theaters.map((theater) =>
+          fetch(
+            `https://dry-tor-14403.herokuapp.com/homepage?theater=${theater}`
+          )
+        )
+      )
+        .then((responses) =>
+          Promise.all(responses.map((response) => response.json()))
+        )
+        .then((data) => {
+          const newMovies = {};
+          const newDeals = [];
+          for (let i in data) {
+            newMovies[theaterNames[i]] = data[i];
+            newDeals.push(...data[i]);
+          }
+          setMovies(newMovies);
+          setDeals(newDeals);
+        });
+    }
+    trackPromise(getMovies());
+  }, [addTheater]);
+
+  function renderDeal({ item, index }) {
+    return (
+      <Deal
+        title={item.title}
+        genre={item.genre}
+        movieLength={item.runtime}
+        location={item.theater_name}
+        rating={item.rating}
+        showingTimes={item.time}
+        price={item.original_price}
+        discount={item.discounted_price}
+        info={item}
+        setOpenCheckout={setOpenCheckout}
+      />
+    );
+  }
+
+  function renderMovie({ item, index }) {
+    return (
+      <Movie
+        title={item.title}
+        genre={item.genre}
+        movieLength={item.runtime}
+        rating={item.rating}
+        showingTimes={item.time}
+        info={item}
+        setOpenCheckout={setOpenCheckout}
+      />
+    );
+  }
+
+  return promiseInProgress ? null : (
     <SafeAreaView
       style={{
         flex: 1,
@@ -121,6 +104,11 @@ export default function Home() {
         ]}
       >
         <Settings visible={openSettings} setVisible={setOpenSettings} />
+        <Checkout
+          visible={openCheckout}
+          setVisible={setOpenCheckout}
+          movieTitle={"Star Wars: The Rise of Skywalker"}
+        />
         <View style={[styles.header, settings.darkMode && darkStyles.header]}>
           <Text
             style={[
@@ -130,16 +118,19 @@ export default function Home() {
           >
             CINESAVE
           </Text>
-          <Text
-            style={[styles.userName, settings.darkMode && darkStyles.userName]}
-          >
-            Hi, {`${user["firstName"]}`}
-          </Text>
           <Pressable onPress={() => setOpenSettings(true)}>
             <Ionicons
-              style={styles.settings}
+              style={styles.icon}
+              name="cart-outline"
+              size={25}
+              color={settings.darkMode ? "#D7B286" : "#C32528"}
+            />
+          </Pressable>
+          <Pressable onPress={() => setOpenSettings(true)}>
+            <Ionicons
+              style={styles.icon}
               name="settings"
-              size={20}
+              size={22}
               color={settings.darkMode ? "#D7B286" : "#C32528"}
             />
           </Pressable>
@@ -156,12 +147,12 @@ export default function Home() {
               settings.darkMode && darkStyles.dealsHeader,
             ]}
           >
-            Top Deals
+            TOP DEALS
           </Text>
           <View style={styles.deals}>
             <Carousel
               layout={"default"}
-              data={movies}
+              data={deals}
               sliderWidth={windowWidth}
               itemWidth={250}
               renderItem={renderDeal}
@@ -173,7 +164,6 @@ export default function Home() {
           style={[
             styles.showingsContainer,
             settings.darkMode && darkStyles.showingsContainer,
-            theaters.length > 0 && { height: 450 },
           ]}
         >
           <TheaterSelect visible={openTheater} setVisible={setOpenTheater} />
@@ -182,58 +172,37 @@ export default function Home() {
             setVisible={setAddTheater}
             setParentVisible={setOpenTheater}
           />
-          {theaters.length === 0 && (
-            <Pressable onPress={() => setAddTheater(true)}>
-              <Text
-                style={[
-                  styles.addTheater,
-                  settings.darkMode && darkStyles.addTheater,
-                ]}
-              >
-                Add theater
-              </Text>
-            </Pressable>
-          )}
-          {theaters.length > 0 && (
-            <View style={styles.selectTheaterContainer}>
-              <Text
-                style={[
-                  styles.selectTheater,
-                  settings.darkMode && darkStyles.selectTheater,
-                ]}
-              >
-                Today at:
-              </Text>
-              <Pressable
-                onPress={() => setOpenTheater(true)}
-                style={{ flexDirection: "row" }}
-              >
-                <Text
-                  style={[
-                    styles.currTheater,
-                    settings.darkMode && darkStyles.currTheater,
-                  ]}
-                >
-                  {`${currTheater}`}
-                </Text>
-                <Ionicons
-                  name="chevron-down"
-                  size={30}
-                  color={settings.darkMode ? "#D7B286" : "#C32528"}
-                />
-              </Pressable>
-            </View>
-          )}
-          {theaters.length > 0 && (
-            <Carousel
-              layout={"default"}
-              data={movies}
-              sliderWidth={windowWidth}
-              itemWidth={250}
-              renderItem={renderMovie}
-              loop={true}
+
+          <Pressable
+            onPress={() => setOpenTheater(true)}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginVertical: 20,
+            }}
+          >
+            <Text
+              style={[
+                styles.currTheater,
+                settings.darkMode && darkStyles.currTheater,
+              ]}
+            >
+              {`${currTheater}`}
+            </Text>
+            <Ionicons
+              name="chevron-down"
+              size={30}
+              color={settings.darkMode ? "#D7B286" : "#C32528"}
             />
-          )}
+          </Pressable>
+          <Carousel
+            layout={"default"}
+            data={movies[`${currTheater}`]}
+            sliderWidth={windowWidth}
+            itemWidth={250}
+            renderItem={renderMovie}
+            loop={true}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -253,7 +222,7 @@ const styles = StyleSheet.create({
   },
 
   brandName: {
-    width: "45%",
+    width: "80%",
     fontSize: 30,
     fontWeight: "bold",
     color: "#C32528",
@@ -262,18 +231,9 @@ const styles = StyleSheet.create({
     margin: 0,
   },
 
-  userName: {
-    width: "45%",
-    textAlign: "right",
-    color: "#C32528",
-    fontSize: 15,
-    paddingRight: 10,
+  icon: {
     paddingBottom: 13,
-    margin: 0,
-  },
-
-  settings: {
-    paddingBottom: 13,
+    marginLeft: 8,
   },
 
   dealsContainer: {
@@ -295,14 +255,10 @@ const styles = StyleSheet.create({
   },
 
   showingsContainer: {
-    marginTop: 30,
+    marginTop: 3,
     backgroundColor: "white",
     marginBottom: 3,
-  },
-
-  selectTheaterContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    paddingBottom: 30,
   },
 
   addTheater: {
@@ -313,21 +269,12 @@ const styles = StyleSheet.create({
     color: "#C32528",
   },
 
-  selectTheater: {
-    fontSize: 25,
-    fontWeight: "bold",
-    paddingLeft: 25,
-    paddingVertical: 20,
-    color: "#C32528",
-  },
-
   currTheater: {
-    paddingLeft: 5,
+    marginLeft: 20,
     fontWeight: "bold",
     color: "#C32528",
     fontSize: 25,
     textTransform: "uppercase",
-    paddingTop: 1,
   },
 });
 
@@ -344,10 +291,6 @@ const darkStyles = StyleSheet.create({
     color: "#D7B286",
   },
 
-  userName: {
-    color: "#D7B286",
-  },
-
   dealsContainer: {
     backgroundColor: "black",
   },
@@ -361,10 +304,6 @@ const darkStyles = StyleSheet.create({
   },
 
   addTheater: {
-    color: "#D7B286",
-  },
-
-  selectTheater: {
     color: "#D7B286",
   },
 

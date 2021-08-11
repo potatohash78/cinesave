@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   StyleSheet,
   ScrollView,
@@ -10,8 +10,9 @@ import {
   Pressable,
   SafeAreaView,
 } from "react-native";
+import * as Location from "expo-location";
+import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
-import MapView from "react-native-maps";
 import { SettingsContext } from "../../SettingsProvider";
 import { UserContext } from "../../UserProvider";
 import Settings from "../Settings";
@@ -23,7 +24,29 @@ export default function Search() {
   const [search, setSearch] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState([]);
-  const [location, setLocation] = useState({});
+  const [region, setRegion] = useState();
+  const [focus, setFocus] = useState();
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    setSearch("");
+    setFocus(null);
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.0461,
+        longitudeDelta: 0.021,
+      });
+    })();
+  }, []);
 
   async function getResults() {}
 
@@ -59,7 +82,7 @@ export default function Search() {
             />
           </Pressable>
         </View>
-        <MapView style={{ width: "100%", height: "100%" }} />
+        <MapView region={region} style={{ width: "100%", height: "100%" }} />
         {showResults && (
           <ScrollView style={[styles.resultsContainer]}>
             {results.map((result) => {
@@ -81,7 +104,7 @@ export default function Search() {
           }}
         />
         <Pressable
-          style={{ position: "absolute", left: 325, top: 95 }}
+          style={{ position: "absolute", left: 325, top: 93 }}
           onPress={() => {
             setShowResults(false);
             setSearch("");

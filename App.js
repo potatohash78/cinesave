@@ -6,8 +6,10 @@ import SettingsProvider from "./src/SettingsProvider";
 import TheatersProvider from "./src/TheatersProvider";
 import UserProvider from "./src/UserProvider";
 import PurchaseProvider from "./src/PurchaseProvider";
+import CheckoutProvider from "./src/CheckoutProvider";
 import LoginDisplay from "./src/Login/LoginDisplay";
 import Main from "./src/Main/Main";
+import Checkout from "./src/Main/Checkout/Checkout";
 
 const Stack = createStackNavigator();
 
@@ -18,15 +20,17 @@ export default function App() {
         <SettingsProvider>
           <TheatersProvider>
             <PurchaseProvider>
-              <Stack.Navigator
-                initialRouteName="LoginDisplay"
-                screenOptions={{
-                  headerShown: false,
-                }}
-              >
-                <Stack.Screen name="LoginDisplay" component={LoginDisplay} />
-                <Stack.Screen name="Main" component={Main} />
-              </Stack.Navigator>
+              <CheckoutProvider>
+                <Stack.Navigator
+                  initialRouteName="LoginDisplay"
+                  screenOptions={{
+                    headerShown: false,
+                  }}
+                >
+                  <Stack.Screen name="LoginDisplay" component={LoginDisplay} />
+                  <Stack.Screen name="Main" component={Main} />
+                </Stack.Navigator>
+              </CheckoutProvider>
             </PurchaseProvider>
           </TheatersProvider>
         </SettingsProvider>
