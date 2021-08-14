@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { CheckoutContext } from "../../CheckoutProvider";
+import { PurchaseContext } from "../../PurchaseProvider";
 
 const line = require("../../../assets/line.png");
 
@@ -18,6 +19,8 @@ export default function ReviewPurchase({ scroll, setPurchased }) {
   const { width: windowWidth } = useWindowDimensions();
   const { poster, date, info, currSeat, concessions } =
     useContext(CheckoutContext);
+  const { tickets, setTickets, purchases, setPurchases } =
+    useContext(PurchaseContext);
 
   return currSeat ? (
     <View style={{ flex: 1, width: "100%" }}>
@@ -171,6 +174,30 @@ export default function ReviewPurchase({ scroll, setPurchased }) {
         style={[styles.buyBtn]}
         onPress={() => {
           // Add in confirmation that the user has purchased the ticket.
+          // Generate QR code somehow
+          // Hook up to the backend.
+          setTickets([
+            ...tickets,
+            {
+              movie: info.title,
+              theater: info.theater_name,
+              time: date,
+              poster: poster,
+              seatNumber: (currSeat[0] + 10).toString(36) + (currSeat[1] + 1),
+              price: info.discounted_price,
+              // qr:
+            },
+          ]);
+          setPurchases([
+            ...purchases,
+            {
+              date: date,
+              price: info.discounted_price,
+              seatNumber: (currSeat[0] + 10).toString(36) + (currSeat[1] + 1),
+              title: info.title,
+              poster: poster,
+            },
+          ]);
           setPurchased(true);
         }}
       >

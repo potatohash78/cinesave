@@ -13,7 +13,7 @@ import {
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
-import SearchResult from "../SearchResult";
+import Theater from "../Theater";
 
 export default function AddTheater({ visible, setVisible, setChanges }) {
   const { settings } = useContext(SettingsContext);
@@ -28,6 +28,7 @@ export default function AddTheater({ visible, setVisible, setChanges }) {
   useEffect(() => {
     setSearch("");
     setFocus(null);
+    setShowResults(false);
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -115,12 +116,13 @@ export default function AddTheater({ visible, setVisible, setChanges }) {
               color="#C32528"
               style={{ zIndex: -1, left: 150, position: "absolute" }}
             />
-            <SearchResult
+            <Theater
               info={focus}
               setRegion={setRegion}
               showResults={setShowResults}
               setFocus={setFocus}
               onMap={true}
+              setChanges={setChanges}
             />
           </Marker>
         ) : null}
@@ -128,13 +130,14 @@ export default function AddTheater({ visible, setVisible, setChanges }) {
       {showResults && (
         <ScrollView style={[styles.resultsContainer]}>
           {results.map((result) => (
-            <SearchResult
+            <Theater
               key={result.theater_id}
               info={result}
               setRegion={setRegion}
               showResults={setShowResults}
               setFocus={setFocus}
               onMap={false}
+              setChanges={setChanges}
             />
           ))}
         </ScrollView>
@@ -208,8 +211,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     shadowOffset: {
-      shadowOffsetWidth: 0,
-      shadowOffsetHeight: 4,
+      width: 0,
+      height: 4,
     },
     shadowRadius: 4,
     shadowOpacity: 0.2,

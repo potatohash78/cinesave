@@ -3,19 +3,22 @@ import {
   StyleSheet,
   ScrollView,
   View,
-  Image,
   Text,
   TextInput,
-  TouchableOpacity,
   Pressable,
   SafeAreaView,
 } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
 import { SettingsContext } from "../../SettingsProvider";
 import { UserContext } from "../../UserProvider";
 import Settings from "../Settings";
+import TheaterSearchResult from "../TheaterSearchResult";
+import MovieSearchResult from "../MovieSearchResult";
+import Checkout from "../Checkout/Checkout";
+import MovieCarousel from "./MovieCarousel";
 
 export default function Search() {
   const { settings } = useContext(SettingsContext);
@@ -23,14 +26,19 @@ export default function Search() {
   const [openSettings, setOpenSettings] = useState(false);
   const [search, setSearch] = useState("");
   const [showResults, setShowResults] = useState(false);
-  const [results, setResults] = useState([]);
+  const [theaterResults, setTheaterResults] = useState([]);
+  const [movieResults, setMovieResults] = useState([]);
   const [region, setRegion] = useState();
   const [focus, setFocus] = useState();
   const [errorMsg, setErrorMsg] = useState(null);
+  const [openCheckout, setOpenCheckout] = useState(false);
+  const [openCarousel, setOpenCarousel] = useState(false);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     setSearch("");
     setFocus(null);
+    setShowResults(false);
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -46,9 +54,57 @@ export default function Search() {
         longitudeDelta: 0.021,
       });
     })();
-  }, []);
+  }, [isFocused]);
 
-  async function getResults() {}
+  async function searchTheaters(theaterName) {
+    const query_ids = await (
+      await fetch(
+        `https://dry-tor-14403.herokuapp.com/info/theaterid?name=${theaterName}`
+      )
+    ).json();
+    const ids = query_ids.map((id) => id.theater_id);
+    await Promise.all(
+      ids.map((id) =>
+        fetch(
+          `https://dry-tor-14403.herokuapp.com/info/theaterinfo?theater=${id}`
+        )
+      )
+    )
+      .then((responses) =>
+        Promise.all(responses.map((response) => response.json()))
+      )
+      .then((data) => {
+        const searchTheaterResults = [];
+        for (let item of data) {
+          searchTheaterResults.push(item);
+        }
+        setTheaterResults(searchTheaterResults);
+      });
+  }
+
+  async function searchMovies(movieName) {
+    const query_ids = await (
+      await fetch(
+        `https://dry-tor-14403.herokuapp.com/info/movieid?name=${movieName}`
+      )
+    ).json();
+    const ids = query_ids.map((id) => id.movie_id);
+    await Promise.all(
+      ids.map((id) =>
+        fetch(`https://dry-tor-14403.herokuapp.com/info/movieinfo?movie=${id}`)
+      )
+    )
+      .then((responses) =>
+        Promise.all(responses.map((response) => response.json()))
+      )
+      .then((data) => {
+        const searchMovieResults = [];
+        for (let item of data) {
+          searchMovieResults.push(item);
+        }
+        setMovieResults(searchMovieResults);
+      });
+  }
 
   return (
     <SafeAreaView
@@ -59,6 +115,13 @@ export default function Search() {
     >
       <View style={{ flex: 1 }}>
         <Settings visible={openSettings} setVisible={setOpenSettings} />
+        <MovieCarousel
+          visible={openCarousel}
+          setVisible={setOpenCarousel}
+          theater={search}
+          setOpenCheckout={setOpenCheckout}
+        />
+        <Checkout visible={openCheckout} setVisible={setOpenCheckout} />
         <View style={[styles.header, settings.darkMode && darkStyles.header]}>
           <Text
             style={[
@@ -82,15 +145,54 @@ export default function Search() {
             />
           </Pressable>
         </View>
-        <MapView region={region} style={{ width: "100%", height: "100%" }} />
+        <MapView region={region} style={{ width: "100%", height: "100%" }}>
+          {focus ? (
+            <Marker
+              coordinate={{
+                latitude: focus.latitude,
+                longitude: focus.longitude,
+              }}
+              style={{ width: "100%" }}
+            >
+              <Ionicons
+                name="location"
+                size={100}
+                color="#C32528"
+                style={{ zIndex: -1, left: 150, position: "absolute" }}
+              />
+              <TheaterSearchResult
+                info={focus}
+                setRegion={setRegion}
+                showResults={setShowResults}
+                setFocus={setFocus}
+                onMap={true}
+                setOpenCarousel={setOpenCarousel}
+              />
+            </Marker>
+          ) : null}
+        </MapView>
         {showResults && (
           <ScrollView style={[styles.resultsContainer]}>
-            {results.map((result) => {
-              <View>
-                <Image />
-                <View></View>
-              </View>;
-            })}
+            {theaterResults.map((result) => (
+              <TheaterSearchResult
+                key={result.theater_id}
+                info={result}
+                setRegion={setRegion}
+                showResults={setShowResults}
+                setFocus={setFocus}
+                onMap={false}
+                setOpenCarousel={setOpenCarousel}
+              />
+            ))}
+            {movieResults.map((result) => (
+              <MovieSearchResult
+                key={result.movie_id}
+                info={result}
+                setRegion={setRegion}
+                showResults={setShowResults}
+                setOpenCheckout={setOpenCheckout}
+              />
+            ))}
           </ScrollView>
         )}
         <TextInput
@@ -100,7 +202,10 @@ export default function Search() {
           placeholder="Search for movies, theaters, and more..."
           onSubmitEditing={async () => {
             setShowResults(true);
-            await getResults();
+            setTheaterResults([]);
+            setMovieResults([]);
+            await searchTheaters(search);
+            await searchMovies(search);
           }}
         />
         <Pressable
@@ -162,19 +267,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     shadowOffset: {
-      shadowOffsetWidth: 0,
-      shadowOffsetHeight: 4,
+      width: 0,
+      height: 4,
     },
     shadowRadius: 4,
     shadowOpacity: 0.2,
   },
 
   resultsContainer: {
-    backgroundColor: "black",
-    opacity: 0.8,
+    backgroundColor: "rgba(0,0,0,0.8)",
     position: "absolute",
     width: "100%",
     height: "100%",
+    paddingTop: 160,
   },
 });
 

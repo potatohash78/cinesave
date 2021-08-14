@@ -104,11 +104,7 @@ export default function Home() {
         ]}
       >
         <Settings visible={openSettings} setVisible={setOpenSettings} />
-        <Checkout
-          visible={openCheckout}
-          setVisible={setOpenCheckout}
-          movieTitle={"Star Wars: The Rise of Skywalker"}
-        />
+        <Checkout visible={openCheckout} setVisible={setOpenCheckout} />
         <View style={[styles.header, settings.darkMode && darkStyles.header]}>
           <Text
             style={[
@@ -156,7 +152,6 @@ export default function Home() {
               sliderWidth={windowWidth}
               itemWidth={250}
               renderItem={renderDeal}
-              loop={true}
             />
           </View>
         </View>
@@ -201,7 +196,6 @@ export default function Home() {
             sliderWidth={windowWidth}
             itemWidth={250}
             renderItem={renderMovie}
-            loop={true}
           />
         </View>
       </ScrollView>

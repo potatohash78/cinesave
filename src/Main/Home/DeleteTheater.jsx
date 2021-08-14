@@ -7,12 +7,18 @@ import { SettingsContext } from "../../SettingsProvider";
 export default function DeleteTheater({
   visible,
   setVisible,
-  theaterName,
   setChanges,
+  index,
 }) {
   const { settings } = useContext(SettingsContext);
-  const { theaters, setTheaters, currTheater, setCurrTheater } =
-    useContext(TheatersContext);
+  const {
+    theaters,
+    setTheaters,
+    currTheater,
+    setCurrTheater,
+    theaterNames,
+    setTheaterNames,
+  } = useContext(TheatersContext);
   return (
     <Overlay
       isVisible={visible}
@@ -28,55 +34,76 @@ export default function DeleteTheater({
           backgroundColor: settings.darkMode ? "black" : "white",
         }}
       />
-      <Text
+      <View
         style={[
-          styles.confirmation,
-          settings.darkMode && darkStyles.confirmation,
+          {
+            backgroundColor: "#C32528",
+            height: "40%",
+            paddingTop: 30,
+            alignItems: "center",
+          },
         ]}
       >
-        Are you sure you want to delete
-      </Text>
-      <Text
-        style={[
-          styles.theaterName,
-          settings.darkMode && darkStyles.theaterName,
-        ]}
-      >{`${theaterName}`}</Text>
-      <Text
-        style={[
-          styles.confirmation,
-          settings.darkMode && darkStyles.confirmation,
-        ]}
-      >
-        from your Theaters?
-      </Text>
-      <View style={[styles.footer, settings.darkMode && darkStyles.footer]}>
-        <Pressable
-          style={[styles.cancelBtn, settings.darkMode && darkStyles.cancelBtn]}
-          onPress={() => setVisible(false)}
+        <Text
+          style={[
+            styles.confirmation,
+            settings.darkMode && darkStyles.confirmation,
+          ]}
         >
-          <Text style={[styles.cancel, settings.darkMode && darkStyles.cancel]}>
-            CANCEL
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[styles.okayBtn, settings.darkMode && darkStyles.okayBtn]}
-          onPress={() => {
-            const newTheaters = theaters.filter(
-              (theater) => theater !== theaterName
-            );
-            setTheaters(newTheaters);
-            setChanges(true);
-            if (theaterName === currTheater) {
-              setCurrTheater(newTheaters.length ? newTheaters[0] : "");
-            }
-            setVisible(false);
-          }}
+          Are you sure you want to delete
+        </Text>
+        <Text
+          style={[
+            styles.theaterName,
+            settings.darkMode && darkStyles.theaterName,
+          ]}
+        >{`${theaterNames[index]}`}</Text>
+        <Text
+          style={[
+            styles.confirmation,
+            settings.darkMode && darkStyles.confirmation,
+          ]}
         >
-          <Text style={[styles.okay, settings.darkMode && darkStyles.okay]}>
-            OK
-          </Text>
-        </Pressable>
+          from your Theaters?
+        </Text>
+        <View style={[styles.footer, settings.darkMode && darkStyles.footer]}>
+          <Pressable
+            style={[
+              styles.cancelBtn,
+              settings.darkMode && darkStyles.cancelBtn,
+            ]}
+            onPress={() => setVisible(false)}
+          >
+            <Text
+              style={[styles.cancel, settings.darkMode && darkStyles.cancel]}
+            >
+              NO
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[styles.okayBtn, settings.darkMode && darkStyles.okayBtn]}
+            onPress={() => {
+              if (theaterNames.length > 1) {
+                setChanges(true);
+                let newTheaterIds = [...theaters];
+                newTheaterIds.splice(index, 1);
+                setTheaters(newTheaterIds);
+                const removedTheater = theaterNames[index];
+                let newTheaters = [...theaterNames];
+                newTheaters.splice(index, 1);
+                setTheaterNames(newTheaters);
+                if (removedTheater === currTheater) {
+                  setCurrTheater(newTheaters[0]);
+                }
+              }
+              setVisible(false);
+            }}
+          >
+            <Text style={[styles.okay, settings.darkMode && darkStyles.okay]}>
+              OK
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </Overlay>
   );
@@ -87,57 +114,64 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     opacity: 0.95,
     paddingTop: "40%",
-    paddingLeft: 30,
+    paddingHorizontal: 0,
   },
 
   confirmation: {
-    color: "#C32528",
+    color: "white",
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 3,
+    textAlign: "left",
+    width: "70%",
   },
 
   theaterName: {
-    color: "#C32528",
+    color: "white",
     fontWeight: "bold",
     fontSize: 16,
     textTransform: "uppercase",
-    marginBottom: 10,
+    marginBottom: 3,
+    textAlign: "left",
+    width: "70%",
   },
 
   footer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 30,
+    marginTop: 60,
   },
 
   cancelBtn: {
-    backgroundColor: "#E4E4E4",
+    backgroundColor: "white",
     borderRadius: 50,
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 5,
-    marginRight: 20,
+    paddingHorizontal: 65,
+    paddingVertical: 10,
+    marginRight: 10,
+    opacity: 0.6,
   },
 
   cancel: {
-    color: "#BCBCBC",
+    color: "#C32528",
     textAlign: "center",
     fontWeight: "bold",
+    fontSize: 24,
   },
 
   okayBtn: {
-    backgroundColor: "#C32528",
+    backgroundColor: "white",
     borderRadius: 50,
     alignItems: "center",
-    paddingHorizontal: 40,
-    paddingVertical: 5,
-    marginLeft: 20,
+    paddingHorizontal: 65,
+    paddingVertical: 10,
+    marginLeft: 10,
   },
 
   okay: {
-    color: "white",
+    color: "#C32528",
     textAlign: "center",
     fontWeight: "bold",
+    fontSize: 24,
   },
 });
 

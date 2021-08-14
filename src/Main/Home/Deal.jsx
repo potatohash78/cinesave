@@ -26,7 +26,7 @@ export default function Deal({
   useEffect(() => {
     async function getPoster() {
       const query = await fetch(
-        `https://dry-tor-14403.herokuapp.com/info/movieposter?${title}`
+        `https://dry-tor-14403.herokuapp.com/info/movieposter?movie=${title}`
       );
       const data = await query.json();
       setUrl(data.poster_path);
@@ -55,8 +55,8 @@ export default function Deal({
       >{`${title}`}</Text>
       <View style={styles.subcontainer}>
         <Text style={styles.genre}>
-          {`${genre}`} | {Math.floor(`${movieLength}` / 60)} h{" "}
-          {`${movieLength}` % 60} m
+          {`${genre}`} | {Math.floor(`${movieLength}` / 60)}h{" "}
+          {`${movieLength}` % 60}m
         </Text>
         <Text style={[styles.rating, settings.darkMode && darkStyles.rating]}>
           <Ionicons name="star-sharp" color="gold" size={17} />
@@ -120,6 +120,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
     marginHorizontal: 15,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowRadius: 4,
+    shadowOpacity: 0.2,
+    marginBottom: 10,
   },
 
   title: {

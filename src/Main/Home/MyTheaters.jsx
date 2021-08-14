@@ -17,15 +17,18 @@ import AddTheater from "./AddTheater";
 
 export default function MyTheaters({ visible, setVisible, setParentVisible }) {
   const { settings } = useContext(SettingsContext);
-  const { theaterNames, setTheaters } = useContext(TheatersContext);
+  const { theaterNames, setTheaters, theaters, setTheaterNames } =
+    useContext(TheatersContext);
   const [remove, setRemove] = useState(false);
-  const [removedTheater, setRemovedTheater] = useState("");
+  const [removedTheater, setRemovedTheater] = useState();
   const [addTheater, setAddTheater] = useState(false);
   const [changes, setChanges] = useState(false);
-  const [initialTheaters, setInitialTheaters] = useState([]);
+  const [initTheaterIds, setIds] = useState([]);
+  const [initTheaterNames, setNames] = useState([]);
 
   useEffect(() => {
-    setInitialTheaters(theaterNames);
+    setNames(theaterNames);
+    setIds(theaters);
   }, [visible]);
   return (
     <Overlay
@@ -45,8 +48,8 @@ export default function MyTheaters({ visible, setVisible, setParentVisible }) {
       <DeleteTheater
         visible={remove}
         setVisible={setRemove}
-        theaterName={removedTheater}
         setChanges={setChanges}
+        index={removedTheater}
       />
       <AddTheater
         visible={addTheater}
@@ -59,7 +62,8 @@ export default function MyTheaters({ visible, setVisible, setParentVisible }) {
           onPress={() => {
             setVisible(false);
             setParentVisible(false);
-            setTheaters(initialTheaters);
+            setTheaters(initTheaterIds);
+            setTheaterNames(initTheaterNames);
           }}
         >
           <Text
@@ -92,9 +96,9 @@ export default function MyTheaters({ visible, setVisible, setParentVisible }) {
         </Pressable>
       </View>
       <ScrollView alwaysBounceVertical={false}>
-        {theaterNames.map((theater) => (
+        {theaterNames.map((theater, index) => (
           <View
-            key={theater}
+            key={index}
             style={[
               styles.theaterContainer,
               settings.darkMode && darkStyles.theaterContainer,
@@ -114,7 +118,7 @@ export default function MyTheaters({ visible, setVisible, setParentVisible }) {
             </Pressable>
             <Pressable
               onPress={() => {
-                setRemovedTheater(theater);
+                setRemovedTheater(index);
                 setRemove(true);
               }}
             >

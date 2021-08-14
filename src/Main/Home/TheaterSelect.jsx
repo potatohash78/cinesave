@@ -37,9 +37,9 @@ export default function TheaterSelect({ visible, setVisible }) {
         </TouchableOpacity>
       </View>
       <ScrollView style={[styles.body, settings.darkMode && darkStyles.body]}>
-        {theaterNames.map((theater) => (
+        {theaterNames.map((theater, index) => (
           <View
-            key={theater}
+            key={index}
             style={[
               styles.theaterContainer,
               settings.darkMode && darkStyles.theaterContainer,
@@ -115,13 +115,15 @@ const styles = StyleSheet.create({
     height: 30,
     flexDirection: "row",
     marginBottom: 15,
+    width: "100%",
   },
 
   theaterOption: {
     color: "#C32528",
-    fontSize: 25,
+    fontSize: 20,
     marginRight: 5,
     textTransform: "uppercase",
+    width: "100%",
   },
 });
 

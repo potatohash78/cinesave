@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Callout } from "react-native-maps";
 import { StyleSheet, View, Text, Pressable, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { TheatersContext } from "../TheatersProvider";
 
-export default function SearchResult({
+export default function TheaterSearchResult({
   info,
   setRegion,
   showResults,
   setFocus,
   onMap,
+  setOpenCarousel,
 }) {
   const {
     theaters,
@@ -131,92 +131,27 @@ export default function SearchResult({
         </View>
 
         <View style={{ marginLeft: 10, marginTop: 10 }}>
-          {theaters.includes(info.theater_id) ? (
-            <View
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#C32528",
+              borderRadius: 50,
+              paddingVertical: 5,
+              width: "70%",
+            }}
+            onPress={() => {
+              setOpenCarousel(true);
+            }}
+          >
+            <Text
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
+                color: "white",
+                fontWeight: "bold",
+                textAlign: "center",
               }}
             >
-              <View
-                style={{
-                  backgroundColor: "#BCBCBC",
-                  borderRadius: 50,
-                  paddingVertical: 5,
-                  paddingHorizontal: 20,
-                }}
-              >
-                <Text style={{ color: "#E4E4E4", fontWeight: "bold" }}>
-                  ADDED
-                </Text>
-              </View>
-              <Pressable
-                onPress={(e) => {
-                  e.stopPropagation();
-                  setTheaters(
-                    theaters.filter((theater) => theater !== info.theater_id)
-                  );
-                  setTheaterNames(
-                    theaterNames.filter(
-                      (theater) => theater !== info.theater_name
-                    )
-                  );
-                  if (currTheater === info.theater_name) {
-                    if (theaters.length > 0) {
-                      setCurrTheater(theaterNames[0]);
-                    } else {
-                      setCurrTheater("");
-                    }
-                  }
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: "#C32528",
-                    borderRadius: 50,
-                    paddingVertical: 5,
-                    paddingHorizontal: 20,
-                  }}
-                >
-                  <Text style={{ color: "white", fontWeight: "bold" }}>
-                    REMOVE
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          ) : (
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#C32528",
-                borderRadius: 50,
-                paddingVertical: 5,
-                width: "70%",
-              }}
-              onPress={() => {
-                setTheaters([...theaters, info.theater_id]);
-                setTheaterNames([...theaterNames, info.theater_name]);
-                showResults(false);
-                const newRegion = {
-                  latitude: info.latitude,
-                  longitude: info.longitude,
-                  latitudeDelta: 0.0461,
-                  longitudeDelta: 0.021,
-                };
-                setRegion(newRegion);
-                setFocus(info);
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                }}
-              >
-                ADD THEATER
-              </Text>
-            </TouchableOpacity>
-          )}
+              SEE SHOWINGS
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

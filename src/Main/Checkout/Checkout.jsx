@@ -76,11 +76,10 @@ export default function Checkout({ visible, setVisible }) {
         <View
           style={{
             position: "absolute",
-            opacity: 0.95,
+            backgroundColor: "rgba(255,255,255,0.95)",
             height: "100%",
             width: "100%",
             justifyContent: "center",
-            backgroundColor: "white",
           }}
         >
           <View
@@ -124,12 +123,17 @@ export default function Checkout({ visible, setVisible }) {
               <View
                 style={{
                   justifyContent: "space-between",
-                  marginLeft: 15,
+                  paddingHorizontal: 15,
                   width: "70%",
                 }}
               >
                 <Text
-                  style={{ fontWeight: "bold", marginBottom: 60, fontSize: 18 }}
+                  style={{
+                    fontWeight: "bold",
+                    marginBottom: 60,
+                    fontSize: 18,
+                    width: "100%",
+                  }}
                 >
                   {info.title}
                 </Text>
@@ -187,7 +191,7 @@ export default function Checkout({ visible, setVisible }) {
 const styles = StyleSheet.create({
   moviePreview: {
     marginVertical: 30,
-    backgroundColor: "white",
+    backgroundColor: "#FFFFFFFF",
     width: "95%",
     borderRadius: 12,
     padding: 10,

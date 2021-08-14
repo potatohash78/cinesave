@@ -8,6 +8,7 @@ import {
   Pressable,
   TouchableOpacity,
   Image,
+  useWindowDimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SettingsContext } from "../../SettingsProvider";
@@ -16,16 +17,19 @@ import { storage } from "../../../firebase";
 import Settings from "../Settings";
 import Purchase from "./Purchase";
 import EditProfile from "./EditProfile";
+import { PurchaseContext } from "../../PurchaseProvider";
 
 const defaultProfile = require("../../../assets/default-profile.png");
 
 export default function Profile() {
   const { settings } = useContext(SettingsContext);
   const { user } = useContext(UserContext);
+  const { purchases } = useContext(PurchaseContext);
   const [openSettings, setOpenSettings] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openPurchase, setOpenPurchase] = useState(false);
   const [profilePic, setProfilePic] = useState();
+  const { width: windowWidth } = useWindowDimensions();
 
   async function getProfilePicture() {
     const imageRef = storage.ref(`images/${user.id}`);
@@ -85,11 +89,6 @@ export default function Profile() {
             ]}
           >
             CINESAVE
-          </Text>
-          <Text
-            style={[styles.userName, settings.darkMode && darkStyles.userName]}
-          >
-            Hi, {`${user["firstName"]}`}
           </Text>
           <Pressable onPress={() => setOpenSettings(true)}>
             <Ionicons
@@ -184,7 +183,17 @@ export default function Profile() {
             styles.rewardsBar,
             settings.darkMode && darkStyles.rewardsBar,
           ]}
-        ></View>
+        >
+          {purchases
+            .slice(-1 * (3 - user.nextReward))
+            .map((purchase, index) => (
+              <Image
+                key={index}
+                source={{ uri: purchase.poster }}
+                style={{ width: windowWidth / 4, height: "100%", opacity: 0.5 }}
+              />
+            ))}
+        </View>
         <Text
           style={[
             styles.rewardsText,
@@ -192,9 +201,22 @@ export default function Profile() {
           ]}
         >
           You are currently{" "}
-          <Text style={{ fontWeight: "bold" }}>
-            {`${user.nextReward}`} MOVIES
-          </Text>{" "}
+        </Text>
+        <Text
+          style={[
+            styles.rewardsText,
+            settings.darkMode && darkStyles.rewardsText,
+            { fontWeight: "bold" },
+          ]}
+        >
+          {`${user.nextReward}`} MOVIES
+        </Text>
+        <Text
+          style={[
+            styles.rewardsText,
+            settings.darkMode && darkStyles.rewardsText,
+          ]}
+        >
           away from your next reward!
         </Text>
         <TouchableOpacity
@@ -227,8 +249,8 @@ export default function Profile() {
             settings.darkMode && darkStyles.personalInfo,
           ]}
         >
-          PERSONAL INFORMATION IS ONLY NEEDED FOR TICKET PURCHASING PURPOSES.
-          YOU CAN VIEW THEM BY EDITING YOUR PROFILE.
+          Personal information is only needed for ticket purchasing purposes.
+          You can view this information by editing your profile.
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -245,6 +267,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     backgroundColor: "white",
     height: 80,
+    justifyContent: "space-between",
   },
 
   brandName: {
@@ -257,18 +280,9 @@ const styles = StyleSheet.create({
     margin: 0,
   },
 
-  userName: {
-    width: "45%",
-    textAlign: "right",
-    color: "#C32528",
-    fontSize: 15,
-    paddingRight: 10,
-    paddingBottom: 13,
-    margin: 0,
-  },
-
   settings: {
     paddingBottom: 13,
+    marginRight: 10,
   },
 
   editContainer: {
@@ -347,13 +361,18 @@ const styles = StyleSheet.create({
     width: "75%",
     borderRadius: 100,
     alignSelf: "center",
+    flexDirection: "row",
+    overflow: "hidden",
+    marginBottom: 8,
   },
 
   rewardsText: {
     width: "75%",
     alignSelf: "center",
-    marginTop: 10,
+    marginTop: 2,
     fontSize: 13,
+    textAlign: "center",
+    color: "#C32528",
   },
 
   purchaseBtn: {
@@ -372,22 +391,20 @@ const styles = StyleSheet.create({
   },
 
   personalInfoHeader: {
-    width: "70%",
+    width: "100%",
     color: "#C32528",
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "bold",
-    alignSelf: "center",
-    textAlign: "center",
     marginTop: 30,
+    marginLeft: 10,
   },
 
   personalInfo: {
-    width: "70%",
+    width: "100%",
     color: "#C32528",
-    fontSize: 20,
-    alignSelf: "center",
-    textAlign: "center",
+    fontSize: 16,
     marginBottom: 20,
+    marginHorizontal: 10,
   },
 });
 

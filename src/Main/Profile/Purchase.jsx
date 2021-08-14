@@ -27,7 +27,7 @@ export default function Purchase({ visible, setVisible }) {
       <SafeAreaView
         style={{ flex: 0, backgroundColor: darkMode ? "black" : "white" }}
       />
-      <ScrollView>
+      <View style={{ flex: 1 }}>
         <EditPurchase visible={openEdit} setVisible={setOpenEdit} />
         <View style={[styles.header, settings.darkMode && darkStyles.header]}>
           <Pressable
@@ -56,43 +56,65 @@ export default function Purchase({ visible, setVisible }) {
             </Text>
           </Pressable>
         </View>
-        <View style={[styles.body, darkMode && darkStyles.body]}>
-          {purchases.map((purchase, i) => (
-            <View
-              key={i}
-              style={[
-                styles.purchaseContainer,
-                darkMode && darkStyles.purchaseContainer,
-              ]}
-            >
-              <Text
+        <ScrollView style={{ backgroundColor: "white", marginTop: 2 }}>
+          {purchases.length ? (
+            purchases.map((purchase, i) => (
+              <View
+                key={i}
                 style={[
-                  styles.movieData,
-                  darkMode && darkStyles.movieData,
-                  { textTransform: "uppercase" },
+                  styles.purchaseContainer,
+                  darkMode && darkStyles.purchaseContainer,
                 ]}
-              >{`${purchase.title}`}</Text>
-              <Text
-                style={[styles.movieData, darkMode && darkStyles.movieData]}
-              >{`${purchase.date}`}</Text>
-              <Text
-                style={[styles.movieData, darkMode && darkStyles.movieData]}
-              >
-                {`${purchase.seatNumber}`} | ${`${purchase.price.toFixed(2)}`}
-              </Text>
-              <TouchableOpacity
-                style={[styles.rateBtn, darkMode && darkStyles.rateBtn]}
               >
                 <Text
-                  style={[styles.rateText, darkMode && darkStyles.rateText]}
+                  style={[
+                    styles.movieData,
+                    darkMode && darkStyles.movieData,
+                    { textTransform: "uppercase" },
+                  ]}
+                >{`${purchase.title}`}</Text>
+                <Text
+                  style={[styles.movieData, darkMode && darkStyles.movieData]}
                 >
-                  RATE
+                  {purchase.date.toLocaleString("default", {
+                    weekday: "long",
+                    month: "long",
+                  })}{" "}
+                  {purchase.date.getDate()}
                 </Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+                <Text
+                  style={[styles.movieData, darkMode && darkStyles.movieData]}
+                >
+                  {`${purchase.seatNumber}`} | ${`${purchase.price.toFixed(2)}`}
+                </Text>
+                <TouchableOpacity
+                  style={[styles.rateBtn, darkMode && darkStyles.rateBtn]}
+                >
+                  <Text
+                    style={[styles.rateText, darkMode && darkStyles.rateText]}
+                  >
+                    RATE
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          ) : (
+            <Text
+              style={[
+                {
+                  fontWeight: "bold",
+                  fontSize: 18,
+                  paddingHorizontal: 10,
+                  marginTop: 20,
+                  color: "#C32528",
+                },
+              ]}
+            >
+              You currently do not have any purchases.
+            </Text>
+          )}
+        </ScrollView>
+      </View>
     </Overlay>
   );
 }
@@ -156,6 +178,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 5,
+    textTransform: "uppercase",
   },
 
   rateBtn: {
