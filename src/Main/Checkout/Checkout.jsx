@@ -17,12 +17,19 @@ import Showings from "./Showings";
 import Seats from "./Seats";
 import ReviewPurchase from "./ReviewPurchase";
 import { CheckoutContext } from "../../CheckoutProvider";
+import { PurchaseContext } from "../../PurchaseProvider";
+import { UserContext } from "../../UserProvider";
+import { SettingsContext } from "../../SettingsProvider";
 
 export default function Checkout({ visible, setVisible }) {
   const scroll = useRef();
+  const secondScroll = useRef();
   const { width: windowWidth } = useWindowDimensions();
   const [purchased, setPurchased] = useState(false);
   const { page, poster, info, date } = useContext(CheckoutContext);
+  const { purchases } = useContext(PurchaseContext);
+  const { user } = useContext(UserContext);
+  const { settings } = useContext(SettingsContext);
 
   useEffect(() => {
     setPurchased(false);
@@ -50,7 +57,6 @@ export default function Checkout({ visible, setVisible }) {
         horizontal={true}
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        scrollEventThrottle={1}
         scrollEnabled={false}
         style={{ width: "100%" }}
         ref={scroll}
@@ -73,14 +79,18 @@ export default function Checkout({ visible, setVisible }) {
         </View>
       </ScrollView>
       {purchased && (
-        <View
+        <ScrollView
           style={{
             position: "absolute",
             backgroundColor: "rgba(255,255,255,0.95)",
             height: "100%",
             width: "100%",
-            justifyContent: "center",
           }}
+          horizontal={true}
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          scrollEnabled={false}
+          ref={secondScroll}
         >
           <View
             style={[
@@ -88,6 +98,8 @@ export default function Checkout({ visible, setVisible }) {
                 backgroundColor: "#C32528",
                 alignItems: "center",
                 height: "70%",
+                width: windowWidth,
+                alignSelf: "center",
               },
             ]}
           >
@@ -169,20 +181,114 @@ export default function Checkout({ visible, setVisible }) {
               Go to <Text style={{ fontWeight: "bold" }}>MY TICKETS</Text> to
               find your ticket.
             </Text>
-            <TouchableOpacity
-              style={[styles.closeBtn]}
-              onPress={() => {
-                setVisible(false);
-              }}
-            >
-              <Text
-                style={[{ color: "#C32528", fontWeight: "bold", fontSize: 20 }]}
+            <View style={{ flex: 1, justifyContent: "flex-end" }}>
+              <TouchableOpacity
+                style={[styles.closeBtn]}
+                onPress={() => {
+                  secondScroll.current.scrollTo({ x: windowWidth * 2 });
+                }}
               >
-                CLOSE
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={[
+                    { color: "#C32528", fontWeight: "bold", fontSize: 20 },
+                  ]}
+                >
+                  NEXT
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+          <View
+            style={[
+              {
+                backgroundColor: "#C32528",
+                alignItems: "center",
+                height: "70%",
+                width: windowWidth,
+                alignSelf: "center",
+              },
+            ]}
+          >
+            <Text
+              style={[
+                {
+                  color: "white",
+                  fontSize: 28,
+                  textAlign: "center",
+                  marginTop: 40,
+                  marginHorizontal: 30,
+                  width: "95%",
+                },
+              ]}
+            >
+              YOU ARE CURRENTLY
+            </Text>
+            <Text
+              style={[
+                {
+                  color: "white",
+                  fontSize: 28,
+                  textAlign: "center",
+                  marginTop: 5,
+                  marginHorizontal: 30,
+                  fontWeight: "bold",
+                },
+              ]}
+            >
+              {2} MOVIES
+            </Text>
+            <Text
+              style={[
+                {
+                  color: "white",
+                  fontSize: 28,
+                  textAlign: "center",
+                  marginTop: 5,
+                  marginHorizontal: 30,
+                  width: "95%",
+                },
+              ]}
+            >
+              AWAY FROM YOUR NEXT REWARD!
+            </Text>
+            <View
+              style={[
+                styles.rewardsBar,
+                settings.darkMode && darkStyles.rewardsBar,
+              ]}
+            >
+              {purchases
+                .slice(-1 * (3 - user.nextReward))
+                .map((purchase, index) => (
+                  <Image
+                    key={index}
+                    source={{ uri: purchase.poster }}
+                    style={{
+                      width: windowWidth / 4,
+                      height: "100%",
+                      opacity: 0.5,
+                    }}
+                  />
+                ))}
+            </View>
+            <View style={{ flex: 1, justifyContent: "flex-end" }}>
+              <TouchableOpacity
+                style={[styles.closeBtn]}
+                onPress={() => {
+                  setVisible(false);
+                }}
+              >
+                <Text
+                  style={[
+                    { color: "#C32528", fontWeight: "bold", fontSize: 20 },
+                  ]}
+                >
+                  CLOSE
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
       )}
     </Overlay>
   );
@@ -204,6 +310,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 33,
     paddingVertical: 8,
     borderRadius: 50,
-    marginTop: 100,
+    marginBottom: 40,
+  },
+
+  rewardsBar: {
+    backgroundColor: "white",
+    height: 85,
+    marginTop: 35,
+    width: "75%",
+    borderRadius: 100,
+    alignSelf: "center",
+    flexDirection: "row",
+    overflow: "hidden",
+    marginBottom: 8,
   },
 });

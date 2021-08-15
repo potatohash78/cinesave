@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import Home from "./Home/Home";
@@ -23,7 +23,16 @@ export default function Main() {
           } else if (route.name === "Search") {
             iconName = focused ? "search" : "search-outline";
           } else if (route.name === "My Tickets") {
-            iconName = focused ? "bandage" : "bandage-outline";
+            return (
+              <Image
+                source={
+                  focused
+                    ? require("../../assets/focused_ticket.png")
+                    : require("../../assets/ticket.png")
+                }
+                style={{ width: 25, height: 25 }}
+              />
+            );
           } else if (route.name === "Profile") {
             iconName = focused ? "person" : "person-outline";
           }
@@ -36,6 +45,9 @@ export default function Main() {
         activeTintColor: settings.darkMode ? "#D7B286" : "#C32528",
         inactiveTintColor: settings.darkMode ? "#D7B286" : "#C32528",
         style: settings.darkMode ? styles.darkTabNav : styles.tabnav,
+        labelStyle: {
+          fontSize: 12,
+        },
       }}
     >
       <Tab.Screen name="Home" component={Home} />

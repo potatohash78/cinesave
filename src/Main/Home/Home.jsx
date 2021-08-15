@@ -102,6 +102,7 @@ export default function Home() {
           styles.homeContainer,
           settings.darkMode && darkStyles.homeContainer,
         ]}
+        showsVerticalScrollIndicator={false}
       >
         <Settings visible={openSettings} setVisible={setOpenSettings} />
         <Checkout visible={openCheckout} setVisible={setOpenCheckout} />
@@ -114,14 +115,7 @@ export default function Home() {
           >
             CINESAVE
           </Text>
-          <Pressable onPress={() => setOpenSettings(true)}>
-            <Ionicons
-              style={styles.icon}
-              name="cart-outline"
-              size={25}
-              color={settings.darkMode ? "#D7B286" : "#C32528"}
-            />
-          </Pressable>
+
           <Pressable onPress={() => setOpenSettings(true)}>
             <Ionicons
               style={styles.icon}
@@ -198,6 +192,40 @@ export default function Home() {
             renderItem={renderMovie}
           />
         </View>
+        {/* Placeholder for other movies */}
+        <View
+          style={[
+            styles.showingsContainer,
+            settings.darkMode && darkStyles.showingsContainer,
+            { marginTop: 0 },
+          ]}
+        >
+          <TheaterSelect visible={openTheater} setVisible={setOpenTheater} />
+          <MyTheaters
+            visible={addTheater}
+            setVisible={setAddTheater}
+            setParentVisible={setOpenTheater}
+          />
+
+          <Text
+            style={[
+              styles.currTheater,
+              settings.darkMode && darkStyles.currTheater,
+              ,
+              { marginVertical: 20 },
+            ]}
+          >
+            MOVIES OUT NOW
+          </Text>
+
+          <Carousel
+            layout={"default"}
+            data={movies[`${currTheater}`]}
+            sliderWidth={windowWidth}
+            itemWidth={250}
+            renderItem={renderMovie}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -213,6 +241,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     backgroundColor: "white",
     height: 80,
+    justifyContent: "space-between",
   },
 
   brandName: {
@@ -227,7 +256,7 @@ const styles = StyleSheet.create({
 
   icon: {
     paddingBottom: 13,
-    marginLeft: 8,
+    marginRight: 10,
   },
 
   dealsContainer: {
@@ -267,7 +296,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     fontWeight: "bold",
     color: "#C32528",
-    fontSize: 25,
+    fontSize: 20,
     textTransform: "uppercase",
   },
 });
