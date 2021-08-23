@@ -6,7 +6,7 @@ export default function CheckoutProvider({ children }) {
   const [page, setPage] = useState(0);
   const [date, setMovieDate] = useState(new Date());
   const [info, setInfo] = useState({});
-  const [currSeat, setSeat] = useState();
+  const [currSeats, setCurrSeats] = useState([]);
   const [poster, setPoster] = useState();
   const [concessions, setConcessions] = useState([]);
 
@@ -19,8 +19,8 @@ export default function CheckoutProvider({ children }) {
         setMovieDate,
         info,
         setInfo,
-        currSeat,
-        setSeat,
+        currSeats,
+        setCurrSeats,
         poster,
         setPoster,
         concessions,

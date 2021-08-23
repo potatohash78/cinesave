@@ -12,34 +12,45 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SelectMultipleGroupButton } from "react-native-selectmultiple-button";
 import { PinchGestureHandler, State } from "react-native-gesture-handler";
 import { CheckoutContext } from "../../CheckoutProvider";
-import Seat from "./Seat";
 
 const imagePath = require("../../../assets/screen.png");
 
 export default function Seats({ scroll }) {
   const { width: windowWidth } = useWindowDimensions();
-  const { date, currSeat, setSeat } = useContext(CheckoutContext);
+  const { date, currSeats, setCurrSeats } = useContext(CheckoutContext);
   const [scale, setScale] = useState(new Animated.Value(1));
   const [zoom, setZoom] = useState(1);
   const [change, setChange] = useState(1);
+  const [numCols, setNumCols] = useState(24);
+  const [numRows, setNumRows] = useState(10);
   const [seats, setSeats] = useState(generateMatrix());
+
   scale.addListener(({ value }) => setZoom(value));
 
   function generateMatrix() {
-    var matrix = [];
-    for (let i = 0; i < 8; i++) {
-      matrix[i] = [];
-      for (let j = 0; j < 20; j++) {
-        matrix[i][j] = <Seat key={[i, j]} seat={[i, j]} />;
+    let matrix = [];
+    // for (let i = 0; i < 8; i++) {
+    //   matrix[i] = [];
+    //   for (let j = 0; j < 20; j++) {
+    //     matrix[i][j] = <Seat key={[i, j]} seat={[i, j]} />;
+    //   }
+    // }
+    for (let i = 0; i < numRows; i++) {
+      for (let j = 0; j < numCols; j++) {
+        matrix.push({
+          value: (i + 10).toString(36) + (j + 1),
+          displayValue: "",
+        });
       }
     }
     return matrix;
   }
 
   useEffect(() => {
-    setSeat();
+    setCurrSeats([]);
     setScale(new Animated.Value(1));
   }, [change]);
 
@@ -86,9 +97,9 @@ export default function Seats({ scroll }) {
         <View
           style={{
             width: "100%",
-            height: 150,
             overflow: "hidden",
-            marginTop: 15,
+            height: 200,
+            marginTop: 5,
           }}
         >
           <PinchGestureHandler
@@ -123,25 +134,44 @@ export default function Seats({ scroll }) {
                 justifyContent: "space-between",
               }}
             >
-              {seats.map((row, i) => (
-                <View
-                  key={i}
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 10,
-                  }}
-                >
-                  {row.map((seat) => seat)}
-                </View>
-              ))}
+              <SelectMultipleGroupButton
+                maximumNumberSelected={2}
+                group={seats}
+                highLightStyle={{
+                  borderColor: "#C325281A",
+
+                  backgroundColor: "#C325281A",
+
+                  textColor: "gray",
+
+                  borderTintColor: "#C32528",
+
+                  backgroundTintColor: "#C32528",
+
+                  textTintColor: "#C32528",
+                }}
+                buttonViewStyle={{
+                  width: windowWidth / ((3 * numCols) / 2),
+                  borderRadius: 50,
+                  height: windowWidth / ((3 * numCols) / 2),
+                  margin: windowWidth / (6 * numCols),
+                }}
+                singleTap={(valueTap) => {
+                  if (currSeats.includes(valueTap)) {
+                    setCurrSeats(currSeats.filter((seat) => seat !== valueTap));
+                  } else if (currSeats.length < 2) {
+                    setCurrSeats([...currSeats, valueTap]);
+                  }
+                }}
+              />
             </Animated.View>
           </PinchGestureHandler>
         </View>
         <View style={[styles.seatContainer]}>
           <Text style={[styles.seatText]}>YOUR SEAT</Text>
-          {currSeat && (
+          {currSeats.map((seat, index) => (
             <View
+              key={index}
               style={{
                 width: "100%",
                 justifyContent: "space-between",
@@ -153,24 +183,23 @@ export default function Seats({ scroll }) {
               <TouchableOpacity
                 style={[styles.seatBtn]}
                 onPress={() => {
-                  setSeat();
+                  setCurrSeats(currSeats.filter((_) => _ !== seat));
                 }}
               >
-                <Text style={[styles.selectedSeat]}>
-                  {(currSeat[0] + 10).toString(36)}
-                  {currSeat[1] + 1}
-                </Text>
+                <Text style={[styles.selectedSeat]}>{seat}</Text>
                 <Ionicons name="close" color="#C32528" size={18} />
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.confirmBtn]}
-                onPress={() => {
-                  scroll(windowWidth * 3);
-                }}
-              >
-                <Text style={[styles.confirm]}>CONFIRM</Text>
-              </TouchableOpacity>
             </View>
+          ))}
+          {currSeats.length > 0 && (
+            <TouchableOpacity
+              style={[styles.confirmBtn]}
+              onPress={() => {
+                scroll(windowWidth * 3);
+              }}
+            >
+              <Text style={[styles.confirm]}>CONFIRM</Text>
+            </TouchableOpacity>
           )}
         </View>
       </View>

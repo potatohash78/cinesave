@@ -81,7 +81,7 @@ export default function Ticket({ visible, setVisible, currTicket }) {
             textTransform: "uppercase",
           }}
         >
-          SEAT {currTicket.seatNumber}
+          SEAT {currTicket.seatNumbers.join(", ")}
         </Text>
         <Text
           style={{

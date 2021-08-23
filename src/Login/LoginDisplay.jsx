@@ -14,7 +14,7 @@ export default function LoginDisplay({ navigation }) {
   const [page, setPage] = useState(0);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#C32528" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={styles.layout}>
         <Text style={styles.brandName}>CINESAVE</Text>
         {page === 0 && (
@@ -28,17 +28,14 @@ export default function LoginDisplay({ navigation }) {
           </TouchableOpacity>
         )}
         {page === 0 && (
-          <Text style={styles.signupOne}>
-            Not a member yet?{" "}
-            <Text
-              style={styles.signupTwo}
-              onPress={() => {
-                setPage(2);
-              }}
-            >
-              Sign up for free!
-            </Text>
-          </Text>
+          <TouchableOpacity
+            style={styles.signupContainer}
+            onPress={() => {
+              setPage(2);
+            }}
+          >
+            <Text style={styles.login}>SIGN UP</Text>
+          </TouchableOpacity>
         )}
         {page === 1 && <Login nav={navigation} />}
         {page === 1 && (
@@ -55,14 +52,14 @@ export default function LoginDisplay({ navigation }) {
 
 const styles = StyleSheet.create({
   layout: {
-    backgroundColor: "#C32528",
+    backgroundColor: "white",
     flex: 1,
     alignItems: "center",
     width: "100%",
   },
 
   brandName: {
-    color: "white",
+    color: "#C32528",
     fontSize: 60,
     marginTop: 80,
     marginBottom: 20,
@@ -70,29 +67,29 @@ const styles = StyleSheet.create({
   },
 
   loginContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#C32528",
     paddingTop: 15,
     paddingBottom: 15,
-    paddingLeft: 50,
-    paddingRight: 50,
+    paddingLeft: 62,
+    paddingRight: 62,
     marginTop: 180,
     borderRadius: 50,
   },
 
   login: {
-    color: "#C32528",
+    color: "white",
     fontSize: 25,
     fontWeight: "bold",
     textAlign: "center",
   },
 
-  signupOne: {
-    color: "white",
-    fontSize: 15,
-    marginTop: 40,
-  },
-
-  signupTwo: {
-    textDecorationLine: "underline",
+  signupContainer: {
+    backgroundColor: "#C32528",
+    paddingTop: 15,
+    paddingBottom: 15,
+    paddingLeft: 50,
+    paddingRight: 50,
+    borderRadius: 50,
+    marginTop: 20,
   },
 });

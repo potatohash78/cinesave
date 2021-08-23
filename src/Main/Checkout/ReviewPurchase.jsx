@@ -17,12 +17,12 @@ const line = require("../../../assets/line.png");
 
 export default function ReviewPurchase({ scroll, setPurchased }) {
   const { width: windowWidth } = useWindowDimensions();
-  const { poster, date, info, currSeat, concessions } =
+  const { poster, date, info, currSeats, concessions } =
     useContext(CheckoutContext);
   const { tickets, setTickets, purchases, setPurchases } =
     useContext(PurchaseContext);
 
-  return currSeat ? (
+  return currSeats.length > 0 ? (
     <View style={{ flex: 1, width: "100%" }}>
       <Text style={[styles.header]}>REVIEW PURCHASE</Text>
       <View style={{ marginTop: 10, width: "100%" }}>
@@ -77,8 +77,7 @@ export default function ReviewPurchase({ scroll, setPurchased }) {
                 hour12: true,
               })}
               {"  "}|{"  "}
-              {(currSeat[0] + 10).toString(36)}
-              {currSeat[1] + 1}
+              {currSeats.join(", ")}
             </Text>
           </View>
           <View
@@ -183,7 +182,7 @@ export default function ReviewPurchase({ scroll, setPurchased }) {
               theater: info.theater_name,
               time: date,
               poster: poster,
-              seatNumber: (currSeat[0] + 10).toString(36) + (currSeat[1] + 1),
+              seatNumbers: currSeats,
               price: info.discounted_price,
               // qr:
             },
@@ -193,7 +192,7 @@ export default function ReviewPurchase({ scroll, setPurchased }) {
             {
               date: date,
               price: info.discounted_price,
-              seatNumber: (currSeat[0] + 10).toString(36) + (currSeat[1] + 1),
+              seatNumbers: currSeats,
               title: info.title,
               poster: poster,
             },

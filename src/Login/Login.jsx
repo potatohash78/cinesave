@@ -57,10 +57,12 @@ export default function Login(props) {
       <TouchableOpacity style={styles.loginContainer} onPress={handleLogin}>
         <Text style={styles.login}>LOGIN</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.googleContainer}>
-        <Text style={styles.googleLogin}>Login using</Text>
-        <Image source={googleImage} />
-      </TouchableOpacity>
+      <View style={{ flex: 1, justifyContent: "flex-end" }}>
+        <TouchableOpacity style={styles.googleContainer}>
+          <Text style={styles.googleLogin}>Login using</Text>
+          <Image source={googleImage} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -70,6 +72,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
+    flex: 1,
   },
 
   field: {
@@ -81,20 +84,28 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 20,
     width: 300,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowRadius: 4,
+    shadowOpacity: 0.2,
+    borderWidth: 1,
+    borderColor: "#C4C4C4",
   },
 
   loginContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#C32528",
     paddingTop: 15,
     paddingBottom: 15,
-    paddingLeft: 50,
-    paddingRight: 50,
+    paddingLeft: 62,
+    paddingRight: 62,
     marginTop: 45,
     borderRadius: 50,
   },
 
   login: {
-    color: "#C32528",
+    color: "white",
     fontSize: 25,
     fontWeight: "bold",
     textAlign: "center",
@@ -106,9 +117,16 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     paddingLeft: 50,
     paddingRight: 50,
-    marginTop: 80,
     borderRadius: 50,
     flexDirection: "row",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowRadius: 4,
+    shadowOpacity: 0.2,
+    borderWidth: 1,
+    borderColor: "#C4C4C4",
   },
 
   googleLogin: {
